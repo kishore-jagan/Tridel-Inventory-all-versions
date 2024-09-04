@@ -11,7 +11,7 @@ class Product {
   final String barCode;
   final String stockInOut;
   final String price;
-  final DateTime date;
+  final String date;
 
   Product(
       {required this.id,

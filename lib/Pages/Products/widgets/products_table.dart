@@ -54,7 +54,14 @@ class _ProductsTableState extends State<ProductsTable> {
           children: [
             _buildFilterDropdown(
               'Category List',
-              ['Electrical', 'Mechanical', 'IT', 'Office'],
+              [
+                'Electrical',
+                'Mechanical',
+                'IT',
+                "Accounts",
+                "Finance",
+                "Consumables"
+              ],
               _productsController.selectedCategory,
               (value) {
                 setState(() {
@@ -206,11 +213,15 @@ class _ProductsTableState extends State<ProductsTable> {
               DataColumn(label: Text("ID", style: TextStyle(fontSize: 20))),
               DataColumn(label: Text('Name', style: TextStyle(fontSize: 20))),
               DataColumn(
+                  label: Text('Project No', style: TextStyle(fontSize: 20))),
+              DataColumn(
                   label: Text('Model No', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Serial No', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Vendor Name', style: TextStyle(fontSize: 20))),
+              DataColumn(
+                  label: Text('Main Category', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Category', style: TextStyle(fontSize: 20))),
               DataColumn(label: Text('Date', style: TextStyle(fontSize: 20))),
@@ -224,9 +235,9 @@ class _ProductsTableState extends State<ProductsTable> {
             ],
             source: MyData(controller: _productsController, context: context),
             columnSpacing: ResponsiveWidget.isLargeScreen(context)
-                ? MediaQuery.of(context).size.width / 50
+                ? MediaQuery.of(context).size.width / 120
                 : ResponsiveWidget.isCustomScreen(context)
-                    ? MediaQuery.of(context).size.width / 60
+                    ? MediaQuery.of(context).size.width / 120
                     : ResponsiveWidget.isMediumScreen(context)
                         ? MediaQuery.of(context).size.width / 120
                         : MediaQuery.of(context).size.width / 120,

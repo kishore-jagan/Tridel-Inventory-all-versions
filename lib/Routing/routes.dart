@@ -21,6 +21,12 @@ const authenticationPageRoute = '/auth';
 const dispatchPageDisplayName = 'Dispatch';
 const dispatchPageRoute = '/dispatch';
 
+const pendingWorkDisplayName = "Pending Task";
+const pendingtaskRoute = '/pending';
+
+const trashDisplayName = "Trash";
+const trashRoute = '/trash';
+
 class MenuItem {
   final String name;
   final String route;

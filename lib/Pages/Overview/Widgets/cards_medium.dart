@@ -76,8 +76,8 @@ class _OverviewCardsMediumScreenState extends State<OverviewCardsMediumScreen> {
                 width: width / 64,
               ),
               InfoCard(
-                title: "Office",
-                value: stockCountController.employeecount.toString(),
+                title: "Ess",
+                value: stockCountController.essCount.toString(),
                 textColor: active,
                 onTap: () {
                   menuController.changeActiveItemTo(userPageDisplayName);

@@ -4,11 +4,38 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/Constants/style.dart';
 import 'package:inventory/Widgets/custom_text.dart';
 import 'package:inventory/api_services/auth_service_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthenticationPage extends StatelessWidget {
+class AuthenticationPage extends StatefulWidget {
   AuthenticationPage({super.key});
 
+  @override
+  State<AuthenticationPage> createState() => _AuthenticationPageState();
+}
+
+class _AuthenticationPageState extends State<AuthenticationPage> {
   final AuthController authController = Get.put(AuthController());
+
+  bool isChecked = false;
+  Future<void> getCreds() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? name = prefs.getString('username');
+    String? password = prefs.getString('password');
+    print("$name, $password");
+    if (name!.isNotEmpty && password!.isNotEmpty) {
+      setState(() {
+        authController.userController.text = name;
+        authController.passwordController.text = password;
+      });
+    } else {}
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCreds();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +43,7 @@ class AuthenticationPage extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/image/bg-image.jpeg'),
+            image: AssetImage('assets/image/authbg.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -108,7 +135,14 @@ class AuthenticationPage extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Checkbox(value: true, onChanged: (value) {}),
+                        Checkbox(
+                            value: isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                isChecked = value!;
+                                print(isChecked);
+                              });
+                            }),
                         const CustomText(text: 'Remember Me')
                       ],
                     ),
@@ -123,7 +157,7 @@ class AuthenticationPage extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    authController.loginUser(context);
+                    authController.loginUser(context, isChecked);
                   },
                   child: Container(
                     decoration: BoxDecoration(

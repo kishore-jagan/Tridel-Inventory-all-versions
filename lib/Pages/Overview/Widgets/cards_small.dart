@@ -68,8 +68,8 @@ class _OverviewCardsSmallScreenState extends State<OverviewCardsSmallScreen> {
               width: width / 64,
             ),
             InfoCardSmall(
-              title: "Office",
-              value: stockCountController.officeCount.toString(),
+              title: "ESS",
+              value: stockCountController.essCount.toString(),
               onTap: () {
                 menuController.changeActiveItemTo(userPageDisplayName);
                 navigationController.navigateTo(userPageRoute);

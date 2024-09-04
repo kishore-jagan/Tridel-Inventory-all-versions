@@ -16,8 +16,26 @@ import '../../helpers/responsiveness.dart';
 import 'widgets/vendor_search.dart';
 
 class InventoryPage extends StatefulWidget {
+  final String token;
+  final String name;
+  final String qty;
+  final String billNo;
+  final String poNo;
+  final String supplierName;
+  final String recieverName;
+  final String location;
+  final String mos;
   const InventoryPage({
     super.key,
+    required this.name,
+    required this.qty,
+    required this.token,
+    required this.billNo,
+    required this.poNo,
+    required this.supplierName,
+    required this.recieverName,
+    required this.location,
+    required this.mos,
   });
 
   @override
@@ -30,6 +48,19 @@ class _InventoryPageState extends State<InventoryPage> {
       Get.put(InventoryController());
   final GlobalKey<VendorSearchState> vendorSearchKey =
       GlobalKey<VendorSearchState>();
+
+  @override
+  void initState() {
+    super.initState();
+    inventoryController.nameController.text = widget.name;
+    inventoryController.qtyController.text = widget.qty;
+    inventoryController.pPoController.text = widget.poNo;
+    inventoryController.pInvoiceController.text = widget.billNo;
+    inventoryController.vendorNameController.text = widget.supplierName;
+    inventoryController.receiversController.text = widget.recieverName;
+    inventoryController.placeController.text = widget.location;
+    inventoryController.selectedMos = widget.mos;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +258,23 @@ class _InventoryPageState extends State<InventoryPage> {
                                   width: 50,
                                 ),
                                 Flexible(
+                                    child: CustomDropDown(
+                                        items:
+                                            inventoryController.returnableList,
+                                        val: inventoryController
+                                            .selectedReturnable.value,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            inventoryController
+                                                .selectedReturnable
+                                                .value = newValue!;
+                                          });
+                                        },
+                                        fieldTitle: 'Returnable')),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                Flexible(
                                     child: CustomTextField(
                                         textEditingController:
                                             inventoryController
@@ -241,72 +289,73 @@ class _InventoryPageState extends State<InventoryPage> {
                     const SizedBox(
                       height: 25,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.1),
-                                offset: const Offset(0, 2),
-                                blurRadius: 2)
-                          ]),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Project Details',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 24),
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: CustomTextField(
-                                  fieldTitle: 'Project Name',
-                                  textEditingController:
-                                      inventoryController.pNameController,
-                                  // hintText: 'Enter Product Name',
-                                )),
-                                const SizedBox(width: 50),
-                                Flexible(
-                                    child: CustomTextField(
-                                  textEditingController:
-                                      inventoryController.pNoController,
-                                  // hintText: 'Model Number',
-                                  fieldTitle: 'Project Number',
-                                )),
-                              ],
-                            ),
-                            const SizedBox(height: 10.0),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: CustomTextField(
-                                  textEditingController:
-                                      inventoryController.pPoController,
-                                  // hintText: 'Model Number',
-                                  fieldTitle: 'Purchase Order',
-                                )),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                Flexible(
-                                    child: CustomTextField(
-                                  textEditingController:
-                                      inventoryController.pInvoiceController,
-                                  // hintText: 'Model Number',
-                                  fieldTitle: 'Invoice Number',
-                                )),
-                              ],
-                            ),
-                          ],
+                    if (inventoryController.selectedMainCategory != 'ESS')
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 2)
+                            ]),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Project Details',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 24),
+                              ),
+                              Row(
+                                children: [
+                                  Flexible(
+                                      child: CustomTextField(
+                                    fieldTitle: 'Project Name',
+                                    textEditingController:
+                                        inventoryController.pNameController,
+                                    // hintText: 'Enter Product Name',
+                                  )),
+                                  const SizedBox(width: 50),
+                                  Flexible(
+                                      child: CustomTextField(
+                                    textEditingController:
+                                        inventoryController.pNoController,
+                                    // hintText: 'Model Number',
+                                    fieldTitle: 'Project Number',
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(height: 10.0),
+                              Row(
+                                children: [
+                                  Flexible(
+                                      child: CustomTextField(
+                                    textEditingController:
+                                        inventoryController.pPoController,
+                                    // hintText: 'Model Number',
+                                    fieldTitle: 'Purchase Order',
+                                  )),
+                                  const SizedBox(
+                                    width: 50,
+                                  ),
+                                  Flexible(
+                                      child: CustomTextField(
+                                    textEditingController:
+                                        inventoryController.pInvoiceController,
+                                    // hintText: 'Model Number',
+                                    fieldTitle: 'Invoice Number',
+                                  )),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     const SizedBox(
                       height: 25,
                     ),
@@ -409,12 +458,11 @@ class _InventoryPageState extends State<InventoryPage> {
                                 Flexible(
                                     child: CustomDropDown(
                                         items: inventoryController.mosList,
-                                        val: inventoryController
-                                            .selectedMos.value,
+                                        val: inventoryController.selectedMos,
                                         onChanged: (newValue) {
                                           setState(() {
-                                            inventoryController
-                                                .selectedMos.value = newValue!;
+                                            inventoryController.selectedMos =
+                                                newValue!;
                                           });
                                         },
                                         fieldTitle: 'Mode of Shipment')),
@@ -451,6 +499,35 @@ class _InventoryPageState extends State<InventoryPage> {
                                           ?.setSelectedVendor();
                                     });
                                     inventoryController.isLoading.value = true;
+                                    if (inventoryController
+                                            .selectedMainCategory.value ==
+                                        "ESS") {
+                                      inventoryController.pNameController.text =
+                                          inventoryController
+                                                  .pNameController.text.isEmpty
+                                              ? 'Not assigned'
+                                              : inventoryController
+                                                  .pNameController.text;
+                                      inventoryController.pNoController.text =
+                                          inventoryController
+                                                  .pNoController.text.isEmpty
+                                              ? 'Not assigned'
+                                              : inventoryController
+                                                  .pNoController.text;
+                                      inventoryController.pPoController.text =
+                                          inventoryController
+                                                  .pPoController.text.isEmpty
+                                              ? 'N/A'
+                                              : inventoryController
+                                                  .pPoController.text;
+                                      inventoryController.pInvoiceController
+                                          .text = inventoryController
+                                              .pInvoiceController.text.isEmpty
+                                          ? 'N/A'
+                                          : inventoryController
+                                              .pInvoiceController.text;
+                                    }
+
                                     if (inventoryController.nameController.text.isNotEmpty &&
                                         inventoryController
                                             .modelController.text.isNotEmpty &&
@@ -464,18 +541,38 @@ class _InventoryPageState extends State<InventoryPage> {
                                             .itemRemarksController
                                             .text
                                             .isNotEmpty &&
+                                        inventoryController
+                                            .pNameController.text.isNotEmpty &&
+                                        inventoryController
+                                            .pNoController.text.isNotEmpty &&
+                                        inventoryController
+                                            .pPoController.text.isNotEmpty &&
+                                        inventoryController.pInvoiceController
+                                            .text.isNotEmpty &&
                                         inventoryController.vendorNameController
+                                            .text.isNotEmpty &&
+                                        inventoryController
+                                            .dateController.text.isNotEmpty &&
+                                        inventoryController
+                                            .placeController.text.isNotEmpty &&
+                                        inventoryController.receiversController
                                             .text.isNotEmpty &&
                                         inventoryController
                                             .vendorRemarksController
                                             .text
-                                            .isNotEmpty &&
-                                        inventoryController
-                                            .dateController.text.isNotEmpty) {
+                                            .isNotEmpty) {
                                       print("Started");
 
+                                      // String status =
                                       await inventoryController.saveData();
                                       productsController.fetchListProducts();
+                                      // Get.back(result: "true");
+                                      Navigator.pop(context, true);
+                                      // if (status == 'ok') {
+                                      //   setState(() {
+                                      //     Get.back();
+                                      //   });
+                                      // } else {}
 
                                       print("End");
                                     } else {
@@ -488,6 +585,8 @@ class _InventoryPageState extends State<InventoryPage> {
                                           Colors.white);
                                     }
                                   } catch (e) {
+                                    Toaster().showsToast('Something went wrong',
+                                        Colors.red, Colors.white);
                                     print('error: $e');
                                     inventoryController.isLoading.value = false;
                                   }

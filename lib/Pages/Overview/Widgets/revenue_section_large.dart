@@ -5,22 +5,25 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:inventory/Constants/style.dart';
 import 'package:inventory/Pages/Overview/Widgets/stockin_pie.dart';
-import 'package:inventory/Pages/Overview/Widgets/stockout_pie.dart';
-import 'package:inventory/api_services/stockout_revenue_service.dart';
 
 import '../../../Constants/constants.dart';
+import '../../../api_services/stockout_revenue_service.dart';
+import 'chart.dart';
 import 'chart1.dart';
+import 'chart_total_portfolio.dart';
+import 'revenue_info.dart';
+import 'stockout_pie.dart';
 
 class RevenueSectionLarge extends StatelessWidget {
   final RevenueService revenueService = Get.put(RevenueService());
 
-  final Map<String, Color> categoryColors = {
-    'GeoScience': geoScience,
-    'GeoInformatics': geoInformatics,
-    'GeoEngineering': geoEngineering,
-    'Office': office,
-    // Add more categories and colors as needed
-  };
+  // final Map<String, Color> categoryColors = {
+  //   'Electrical': electrical,
+  //   'Mechanical': mechanical,
+  //   'IT': it,
+  //   'Finance': finance,
+  //   'Consumables': consumables
+  // };
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class RevenueSectionLarge extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               margin: const EdgeInsets.symmetric(vertical: 30),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 238, 245, 255),
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
@@ -50,76 +53,83 @@ class RevenueSectionLarge extends StatelessWidget {
                   border: Border.all(color: splineColor, width: .5)),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: categoryColors.entries.map((entry) {
-                      return Row(
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            color: entry.value,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(entry.key, style: const TextStyle(fontSize: 16)),
-                        ],
-                      );
-                    }).toList(),
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: categoryColors.entries.map((entry) {
+                  //     return Row(
+                  //       children: [
+                  //         Container(
+                  //           width: 16,
+                  //           height: 16,
+                  //           color: entry.value,
+                  //         ),
+                  //         const SizedBox(width: 8),
+                  //         Text(entry.key, style: const TextStyle(fontSize: 16)),
+                  //       ],
+                  //     );
+                  //   }).toList(),
+                  // ),
                   SizedBox(
                     height: 20,
                   ),
                   Row(
                     children: [
-                      Expanded(child: StockinPie()),
+                      Expanded(child: StockinCategoryPie()),
+                      // Expanded(child: StockinProductPie()),
 
                       Expanded(child: StockoutPie()),
 
-                      // Expanded(child: ChartTotalPortfolio()),
-                      // Expanded(
-                      //   child: Column(
-                      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //     children: [
-                      //       Row(
-                      //         children: [
-                      //           RevenueInfo(
-                      //             title: "Today's revenue",
-                      //             amount: revenueService.revenue.value.today
-                      //                 .toStringAsFixed(2),
-                      //           ),
-                      //           RevenueInfo(
-                      //             title: "Last 7 days",
-                      //             amount: revenueService.revenue.value.last7Days
-                      //                 .toStringAsFixed(2),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //       const SizedBox(
-                      //         height: 30,
-                      //       ),
-                      //       Row(
-                      //         children: [
-                      //           RevenueInfo(
-                      //             title: "Last 30 days",
-                      //             amount: revenueService.revenue.value.last30Days
-                      //                 .toStringAsFixed(2),
-                      //           ),
-                      //           RevenueInfo(
-                      //             title: "Last 12 months",
-                      //             amount: revenueService.revenue.value.last12Months
-                      //                 .toStringAsFixed(2),
-                      //           ),
-                      //         ],
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
+                      Expanded(child: ChartTotalPortfolio()),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                RevenueInfo(
+                                  title: "Today's revenue",
+                                  amount: revenueService.revenue.value.today
+                                      .toStringAsFixed(2),
+                                ),
+                                RevenueInfo(
+                                  title: "Last 7 days",
+                                  amount: revenueService.revenue.value.last7Days
+                                      .toStringAsFixed(2),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              children: [
+                                RevenueInfo(
+                                  title: "Last 30 days",
+                                  amount: revenueService
+                                      .revenue.value.last30Days
+                                      .toStringAsFixed(2),
+                                ),
+                                RevenueInfo(
+                                  title: "Last 12 months",
+                                  amount: revenueService
+                                      .revenue.value.last12Months
+                                      .toStringAsFixed(2),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(
                     height: defaultPadding,
                   ),
                   Chart1(),
+                  SizedBox(
+                    height: defaultPadding,
+                  ),
+                  Chart(),
                 ],
               ),
             );

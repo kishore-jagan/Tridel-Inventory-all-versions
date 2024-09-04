@@ -69,8 +69,8 @@ class _OverviewCardsLargeScreenState extends State<OverviewCardsLargeScreen> {
             width: width / 64,
           ),
           InfoCard(
-            title: "Office",
-            value: stockCountController.officeCount.toString(),
+            title: "ESS",
+            value: stockCountController.essCount.toString(),
             textColor: active,
             onTap: () {
               menuController.changeActiveItemTo(userPageDisplayName);

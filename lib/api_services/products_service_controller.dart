@@ -1,7 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, avoid_print
 import 'dart:convert';
 import 'package:excel/excel.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -13,7 +12,9 @@ import 'package:pdf/widgets.dart' as pw;
 
 class ProductsController extends GetxController {
   var apiResponse = <Product>[].obs;
-  var data = <SalesData2>[].obs;
+  var categotyChart = <StockinData>[].obs;
+  // var productChart = <StockinData>[].obs;
+
   List<dynamic> dataListProduct = <dynamic>[].obs;
   List<dynamic> filteredDataList = <dynamic>[].obs;
   var error = Rxn<String>();
@@ -29,7 +30,8 @@ class ProductsController extends GetxController {
   void onInit() {
     super.onInit();
     fetchListProducts();
-    fetchChartData2();
+    fetchCategoryChart();
+    // fetchCProducthart();
   }
 
   Future<void> fetchProducts() async {
@@ -74,8 +76,8 @@ class ProductsController extends GetxController {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         List<dynamic> productList = data['products'];
-        dataListProduct.assignAll(productList);
-        filteredDataList.assignAll(productList);
+        dataListProduct.assignAll(productList.reversed);
+        filteredDataList.assignAll(productList.reversed);
       } else {
         throw Exception('Failed to load data');
       }
@@ -86,7 +88,7 @@ class ProductsController extends GetxController {
     }
   }
 
-  Future<void> fetchChartData2() async {
+  Future<void> fetchCategoryChart() async {
     try {
       isLoading.value = true;
 
@@ -100,17 +102,36 @@ class ProductsController extends GetxController {
         if (jsonData['products'] != null) {
           final List<dynamic> productList = jsonData['products'];
 
-          data.value = productList.map((item) {
-            final date = DateTime.parse(item['date']);
-            final qty = item['qty'];
-            final name = item['name'] ?? 'Unknown';
-            final mainCategory = item['main_category'];
+          final Map<String, double> categoryTotals = {};
 
-            return SalesData2(
-                date,
-                qty is int ? qty.toDouble() : double.parse(qty),
-                name,
-                mainCategory);
+          for (var item in productList) {
+            final category = item['category'];
+            final qty = item['qty'] is int
+                ? item['qty'].toDouble()
+                : double.parse(item['qty']);
+
+            if (categoryTotals.containsKey(category)) {
+              categoryTotals[category] = categoryTotals[category]! + qty;
+            } else {
+              categoryTotals[category] = qty;
+            }
+          }
+
+          // data.value = productList.map((item) {
+          //   final date = DateTime.parse(item['date']);
+          //   final qty = item['qty'];
+          //   final name = item['name'] ?? 'Unknown';
+          //   final mainCategory = item['main_category'];
+          //   final category = item['category'];
+
+          categotyChart.value = categoryTotals.entries.map((entry) {
+            return StockinData(
+              DateTime.now(), // Dummy date
+              entry.value,
+              entry.key, // Category name
+              '', // No need for mainCategory
+              entry.key, // Use category as both category and mainCategory
+            );
           }).toList();
 
           // print('Fetched Data: $data');
@@ -126,6 +147,49 @@ class ProductsController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // Future<void> fetchCProducthart() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     final response = await http
+  //         .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.fetchProducts}'));
+
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> jsonData = json.decode(response.body);
+
+  //       // Ensure you're accessing the correct key in the JSON data
+  //       if (jsonData['products'] != null) {
+  //         final List<dynamic> productList = jsonData['products'];
+
+  //         productChart.value = productList.map((item) {
+  //           final date = DateTime.parse(item['date']);
+  //           final qty = item['qty'];
+  //           final name = item['name'] ?? 'Unknown';
+  //           final mainCategory = item['main_category'];
+  //           final category = item['category'];
+
+  //           return StockinData(
+  //               date,
+  //               qty is int ? qty.toDouble() : double.parse(qty),
+  //               name,
+  //               mainCategory,
+  //               category);
+  //         }).toList();
+
+  //         // print('Fetched Data: $data');
+  //       } else {
+  //         throw Exception('Products key is missing in the response');
+  //       }
+  //     } else {
+  //       throw Exception('Failed to load data');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching chart data: $e');
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   void filterData() {
     filteredDataList.clear();
@@ -166,6 +230,14 @@ class ProductsController extends GetxController {
       String lowerSearchData = searchData.toLowerCase();
       filteredDataList.retainWhere((product) =>
           product['name'].toString().toLowerCase().contains(lowerSearchData) ||
+          product['project_name']
+              .toString()
+              .toLowerCase()
+              .contains(lowerSearchData) ||
+          product['project_no']
+              .toString()
+              .toLowerCase()
+              .contains(lowerSearchData) ||
           product['vendor_name']
               .toString()
               .toLowerCase()
@@ -492,11 +564,12 @@ class ProductsController extends GetxController {
   }
 }
 
-class SalesData2 {
-  SalesData2(this.date, this.qty, this.name, this.mainCategory);
+class StockinData {
+  StockinData(this.date, this.qty, this.name, this.mainCategory, this.category);
 
   final DateTime date;
   final double qty;
   final String name;
   final String mainCategory;
+  final String category;
 }

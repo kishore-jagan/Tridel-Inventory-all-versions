@@ -26,6 +26,8 @@ class EditProductPopup extends StatelessWidget {
         TextEditingController(text: product['model_no']);
     final TextEditingController quantityController =
         TextEditingController(text: product['qty'].toString());
+    final TextEditingController mainCategoryController =
+        TextEditingController(text: product['main_category']);
     final TextEditingController categoryController =
         TextEditingController(text: product['category']);
     final TextEditingController priceController =
@@ -74,6 +76,7 @@ class EditProductPopup extends StatelessWidget {
               'model_no': modelNoController.text,
               'qty': quantityController.text,
               'Stock_in_out': selectedStock,
+              'main_category': mainCategoryController.text,
               'category': categoryController.text,
               'price': priceController.text,
             };

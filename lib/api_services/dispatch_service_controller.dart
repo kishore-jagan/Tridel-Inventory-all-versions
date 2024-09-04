@@ -17,10 +17,13 @@ class DispatchController extends GetxController {
   final TextEditingController customerNameController = TextEditingController();
   final TextEditingController invoiceController = TextEditingController();
   final TextEditingController pnoController = TextEditingController();
-  final TextEditingController mosController = TextEditingController();
+  // final TextEditingController mosController = TextEditingController();
   final TextEditingController senderNameController = TextEditingController();
   final TextEditingController dispatchRemarksController =
       TextEditingController();
+
+  RxString selectedMos = "ByRoad".obs;
+  List<String> mosList = ["ByRoad", "ByAir", "ByTrain", "ByShip"];
 
   var selectedProducts = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
@@ -45,6 +48,11 @@ class DispatchController extends GetxController {
         },
         body: jsonEncode({
           'customerName': customerNameController.text,
+          'invoiceNo': invoiceController.text,
+          'projectNo': pnoController.text,
+          'mos': selectedMos,
+          'senderName': senderNameController.text,
+          'dispatchRemarks': dispatchRemarksController.text,
           'date': currentDate,
           'products': selectedProducts.map((product) {
             int quantity = int.tryParse(product['qty'].toString()) ?? 0;
@@ -74,8 +82,8 @@ class DispatchController extends GetxController {
           // Get.snackbar('Success', result['message'],
           //     snackPosition: SnackPosition.BOTTOM);
           await addCustomer();
-          selectedProducts.clear();
-          customerNameController.clear();
+          // selectedProducts.clear();
+          // customerNameController.clear();
         } else {
           final String error = result['message'];
           Toaster().showsToast(error, Colors.red, Colors.white);

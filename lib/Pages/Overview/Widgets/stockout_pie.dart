@@ -10,11 +10,19 @@ class StockoutPie extends StatelessWidget {
   StockoutPie({super.key});
   final ChartController chartController = Get.put(ChartController());
 
+  // final Map<String, Color> categoryColors = {
+  //   'GeoScience': geoScience,
+  //   'GeoInformatics': geoInformatics,
+  //   'GeoEngineering': geoEngineering,
+  //   'ESS': ess,
+  // };
+
   final Map<String, Color> categoryColors = {
-    'GeoScience': geoScience,
-    'GeoInformatics': geoInformatics,
-    'GeoEngineering': geoEngineering,
-    'Office': office,
+    'Electrical': electrical,
+    'Mechanical': mechanical,
+    'IT': it,
+    'Finance': finance,
+    'Consumables': consumables
   };
 
   @override
@@ -23,7 +31,7 @@ class StockoutPie extends StatelessWidget {
       if (chartController.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
       } else {
-        final List<SalesData> data = chartController.data;
+        final List<SalesData> data = chartController.categoryChart;
         print('Fetched Data: ${chartController.data}');
 
         if (data.isEmpty) {
@@ -66,7 +74,7 @@ class StockoutPie extends StatelessWidget {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
-                            '${sales.name}\n${chartController.dateFormat.format(sales.date)}\nQty: ${sales.qty}',
+                            '${sales.name}\nQty: ${sales.qty}',
                             style: const TextStyle(color: Colors.black),
                           ),
                         );
@@ -89,7 +97,7 @@ class StockoutPie extends StatelessWidget {
                         explodeIndex: 0,
                         // Adding gradient color to pie chart
                         pointColorMapper: (SalesData data, _) =>
-                            categoryColors[data.mainCategory] ?? Colors.grey,
+                            categoryColors[data.name] ?? Colors.grey,
                       ),
                     ],
                     legend: Legend(

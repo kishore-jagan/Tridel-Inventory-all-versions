@@ -7,6 +7,8 @@ import 'package:inventory/Helpers/responsiveness.dart';
 import 'package:inventory/Routing/routes.dart';
 import 'package:inventory/Widgets/side_menu_item.dart';
 
+import '../Helpers/autoscrolltext.dart';
+
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
 
@@ -118,7 +120,25 @@ class SideMenu extends StatelessWidget {
                       },
                     ))
                 .toList(),
-          )
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 16,
+          ),
+          Expanded(child: const InformationWarning()),
+          SideMenuItem(
+            itemName: pendingWorkDisplayName,
+            onTap: () {
+              menuController.changeActiveItemTo(pendingWorkDisplayName);
+              navigationController.navigateTo(pendingtaskRoute);
+            },
+          ),
+          SideMenuItem(
+            itemName: trashDisplayName,
+            onTap: () {
+              menuController.changeActiveItemTo(trashDisplayName);
+              navigationController.navigateTo(trashRoute);
+            },
+          ),
         ],
       ),
     );
