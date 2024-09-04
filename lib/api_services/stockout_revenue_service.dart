@@ -24,7 +24,7 @@ class StockOutService extends GetxController {
             .map((recordJson) => StockOutRecord.fromJson(recordJson))
             .toList();
 
-        stockOutList.assignAll(records);
+        stockOutList.assignAll(records.reversed);
         // print('stockOutList: $stockOutList');
       } else {
         throw Exception('Failed to load stock out records.');

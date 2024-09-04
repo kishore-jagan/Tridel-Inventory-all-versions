@@ -10,12 +10,15 @@ class ApiConfig {
   static const String stockOutRevenue = '/Inventory_Api/stockout_revenue.php';
   static const String addInventory = '/Inventory_Api/add_inventory.php';
   static const String fetchVendor = '/Inventory_Api/fetch_vendor.php';
+  static const String fetchReceiver = '/Inventory_Api/fetch_receiver.php';
   static const String addVendor = '/Inventory_Api/add_vendor.php';
+  static const String addReceiver = '/Inventory_Api/add_receiver.php';
   static const String fetchProducts = '/Inventory_Api/fetch_products.php';
   static const String updateProduct = '/Inventory_Api/update_product.php';
   static const String deleteProduct = '/Inventory_Api/delete_product.php';
   static const String getBin = '/Inventory_Api/get_bin.php';
   static const String undo = '/Inventory_Api/undo.php';
+  static const String returnable = '/Inventory_Api/returnable_status.php';
   static const String addEmployee = '/Inventory_Api/add_employee.php';
   static const String employeeList = '/Inventory_Api/fetch_employees.php';
   static const String dispatchItems = '/Inventory_Api/dispatch.php';

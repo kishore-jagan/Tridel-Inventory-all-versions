@@ -5,6 +5,7 @@ class StockOutRecord {
   final String name;
   final String serialNo;
   final String modelNo;
+  final String mainCategory;
   final String category;
   final String qty;
   final double price;
@@ -17,6 +18,7 @@ class StockOutRecord {
     required this.name,
     required this.serialNo,
     required this.modelNo,
+    required this.mainCategory,
     required this.category,
     required this.qty,
     required this.price,
@@ -34,6 +36,7 @@ class StockOutRecord {
         name: json['name'],
         serialNo: json['serial_no'],
         modelNo: json['model_no'],
+        mainCategory: json['main_category'],
         category: json['category'],
         qty: (json['qty']), // Convert to int
         price: double.parse(json['price'].toString()), // Ensure double type

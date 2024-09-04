@@ -3,7 +3,6 @@ import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:inventory/api_services/api_config.dart';
-import 'package:inventory/api_services/boxController.dart';
 
 class UpdateBox {
   Future<bool> boxUpdate(String name, String qty, String token) async {

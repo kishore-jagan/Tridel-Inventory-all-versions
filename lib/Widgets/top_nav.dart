@@ -64,7 +64,7 @@ AppBar topNavigationBar(BuildContext context, GlobalKey<ScaffoldState> key) =>
                   //   weight: FontWeight.bold,
                   // )),
                   // Expanded(child: Container()),
-                  Spacer(),
+                  const Spacer(),
                   // Obx(
                   //   () => CustomText(
                   //     text: 'Welcome, ${Get.find<AuthController>().userName}',

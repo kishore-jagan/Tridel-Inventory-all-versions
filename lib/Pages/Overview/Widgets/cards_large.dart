@@ -33,7 +33,7 @@ class _OverviewCardsLargeScreenState extends State<OverviewCardsLargeScreen> {
       () => Row(
         children: [
           InfoCard(
-              title: "GeoScience Stock",
+              title: "GeoScience",
               value: stockCountController.geoscienceCount.toString(),
               textColor: Colors.orange,
               onTap: () {
@@ -45,7 +45,7 @@ class _OverviewCardsLargeScreenState extends State<OverviewCardsLargeScreen> {
             width: width / 64,
           ),
           InfoCard(
-              title: "GeoInformatics Stock",
+              title: "GeoInformatics",
               value: stockCountController.geoinformaticsCount.toString(),
               textColor: Colors.lightGreen,
               onTap: () {

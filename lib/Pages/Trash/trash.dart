@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, use_build_context_synchronously, avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:inventory/api_services/products_service_controller.dart';
 import 'package:http/http.dart' as http;
 import '../../Constants/controllers.dart';
+import '../../Constants/style.dart';
 import '../../Widgets/custom_text.dart';
 import '../../api_services/api_config.dart';
 import '../../api_services/trashController.dart';
@@ -23,23 +26,24 @@ class _TrashPageState extends State<TrashPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _trash.fetchBin();
   }
 
   List<DataColumn> col = [
-    DataColumn(label: Text("ID", style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Name', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Model No', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Serial No', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Vendor Name', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Category', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Date', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Quantity', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Amount', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Total Amount', style: TextStyle(fontSize: 20))),
-    DataColumn(label: Text('Actions', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text("ID", style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Name', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Model No', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Serial No', style: TextStyle(fontSize: 20))),
+    const DataColumn(
+        label: Text('Vendor Name', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Category', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Date', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Quantity', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Amount', style: TextStyle(fontSize: 20))),
+    const DataColumn(
+        label: Text('Total Amount', style: TextStyle(fontSize: 20))),
+    const DataColumn(label: Text('Actions', style: TextStyle(fontSize: 20))),
   ];
   @override
   Widget build(BuildContext context) {
@@ -60,54 +64,100 @@ class _TrashPageState extends State<TrashPage> {
         ),
         Expanded(child: Obx(() {
           if (_trash.trash.isEmpty) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
-          return DataTable(
-              columns: col,
-              columnSpacing: 25,
-              rows: List<DataRow>.generate(
-                  _trash.trash.length,
-                  (index) => DataRow(cells: [
-                        DataCell(Text(_trash.trash[index].id)),
-                        DataCell(Text(_trash.trash[index].name)),
-                        DataCell(Text(_trash.trash[index].modelNo)),
-                        DataCell(Text(_trash.trash[index].serialNo)),
-                        DataCell(Text(_trash.trash[index].vendorName)),
-                        DataCell(Text(_trash.trash[index].category)),
-                        DataCell(Text(_trash.trash[index].date)),
-                        DataCell(Text(_trash.trash[index].qty)),
-                        DataCell(Text(_trash.trash[index].price)),
-                        DataCell(Text(_trash.trash[index].totalPrice)),
-                        DataCell(InkWell(
-                          onTap: () async {
-                            bool status = await _undo(_trash.trash[index].id,
-                                _trash.trash[index].mainCategory);
-                            if (status) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content:
-                                          Text("Product Undo Successfully")));
-                            }
-                          },
-                          child: Container(
-                            height: 30,
-                            width: 60,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.amber.withOpacity(0.5)),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15))),
-                            child: Center(
-                              child: Text(
-                                "Undo",
+          return Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: active.withOpacity(.4), width: .5),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      offset: const Offset(0, 2),
+                      blurRadius: 2)
+                ]),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DataTable(
+                  columns: col,
+                  columnSpacing: ResponsiveWidget.isLargeScreen(context)
+                      ? MediaQuery.of(context).size.width / 50
+                      : ResponsiveWidget.isCustomScreen(context)
+                          ? MediaQuery.of(context).size.width / 120
+                          : ResponsiveWidget.isMediumScreen(context)
+                              ? MediaQuery.of(context).size.width / 120
+                              : MediaQuery.of(context).size.width / 120,
+                  horizontalMargin:
+                      ResponsiveWidget.isLargeScreen(context) ? 30 : 10,
+                  // showCheckboxColumn: false,
+                  // headingRowColor: MaterialStateColor.resolveWith(
+                  //     (states) => Colors.blue.shade200),
+                  rows: List<DataRow>.generate(
+                      _trash.trash.length,
+                      (index) => DataRow(cells: [
+                            _buildDataCell((index + 1).toString()),
+                            _buildDataCell(_trash.trash[index].name),
+                            _buildDataCell(_trash.trash[index].modelNo),
+                            _buildDataCell(_trash.trash[index].serialNo),
+                            _buildDataCell(_trash.trash[index].vendorName),
+                            _buildDataCell(_trash.trash[index].category),
+                            _buildDataCell(_trash.trash[index].date),
+                            _buildDataCell(_trash.trash[index].qty,
+                                centerText: true),
+                            _buildDataCell(_trash.trash[index].price),
+                            _buildDataCell(_trash.trash[index].totalPrice),
+
+                            // DataCell(Text(_trash.trash[index].id)),
+                            // DataCell(Text(_trash.trash[index].name)),
+                            // DataCell(Text(_trash.trash[index].modelNo)),
+                            // DataCell(Text(_trash.trash[index].serialNo)),
+                            // DataCell(Text(_trash.trash[index].vendorName)),
+                            // DataCell(Text(_trash.trash[index].category)),
+                            // DataCell(Text(_trash.trash[index].date)),
+                            // DataCell(Text(_trash.trash[index].qty)),
+                            // DataCell(Text(_trash.trash[index].price)),
+                            // DataCell(Text(_trash.trash[index].totalPrice)),
+                            DataCell(InkWell(
+                              onTap: () async {
+                                bool status = await _undo(
+                                    _trash.trash[index].id,
+                                    _trash.trash[index].mainCategory);
+                                if (status) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Product Undo Successfully")));
+                                }
+                              },
+                              child: Container(
+                                height: 30,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color:
+                                            Colors.lightBlue.withOpacity(0.5)),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15))),
+                                child: const Center(
+                                  child: Text(
+                                    "Undo",
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        )),
-                      ])));
+                            )),
+                          ]))),
+            ),
+          );
         }))
       ],
     );
+  }
+
+  DataCell _buildDataCell(String value, {bool centerText = false}) {
+    return DataCell(centerText
+        ? Center(child: CustomText(text: value))
+        : CustomText(text: value));
   }
 
   Future<bool> _undo(String id, String category) async {

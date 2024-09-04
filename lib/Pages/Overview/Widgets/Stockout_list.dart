@@ -6,7 +6,9 @@ import 'package:inventory/api_services/stockout_revenue_service.dart';
 
 import '../../../Constants/style.dart';
 import '../../../Helpers/responsiveness.dart';
+import '../../../Widgets/custom_button.dart';
 import '../../../Widgets/custom_text.dart';
+import '../../Dispatch/Widget/dispatchList_products.dart';
 
 class StockOutList extends StatefulWidget {
   const StockOutList({super.key});
@@ -42,6 +44,10 @@ class _StockOutListState extends State<StockOutList> {
           size: 30,
         ));
       } else {
+        final lastFiveRecords = stockOutList.stockOutList.length > 10
+            ? stockOutList.stockOutList
+                .sublist(stockOutList.stockOutList.length - 10)
+            : stockOutList.stockOutList;
         return Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -62,11 +68,24 @@ class _StockOutListState extends State<StockOutList> {
               const SizedBox(
                 width: 10,
               ),
-              CustomText(
-                text: "StockOut List",
-                color: lightGray,
-                weight: FontWeight.bold,
-                size: 20,
+              Row(
+                children: [
+                  CustomText(
+                    text: "StockOut List",
+                    color: lightGray,
+                    weight: FontWeight.bold,
+                    size: 20,
+                  ),
+                  const Spacer(),
+                  CustomButton(
+                    width: 170,
+                    onTap: () {
+                      Get.to(() => DispatchedProductsPage());
+                    },
+                    text: 'More info',
+                    icon: Icons.arrow_forward,
+                  ),
+                ],
               ),
               SingleChildScrollView(
                 controller: verticalScrollController,
@@ -76,7 +95,7 @@ class _StockOutListState extends State<StockOutList> {
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
                     columnSpacing: ResponsiveWidget.isLargeScreen(context)
-                        ? MediaQuery.of(context).size.width / 16
+                        ? MediaQuery.of(context).size.width / 22
                         : ResponsiveWidget.isCustomScreen(context)
                             ? MediaQuery.of(context).size.width / 26
                             : ResponsiveWidget.isMediumScreen(context)
@@ -104,6 +123,11 @@ class _StockOutListState extends State<StockOutList> {
                       )),
                       DataColumn(
                           label: Text(
+                        'Main Category',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      DataColumn(
+                          label: Text(
                         'Category',
                         style: TextStyle(fontSize: 20),
                       )),
@@ -117,16 +141,29 @@ class _StockOutListState extends State<StockOutList> {
                               textAlign: TextAlign.center)),
                     ],
                     rows: List.generate(
-                      stockOutList.stockOutList.length,
+                      lastFiveRecords.length,
                       (index) => DataRow(
                         cells: [
                           DataCell(CustomText(text: (index + 1).toString())),
+                          DataCell(Container(
+                            constraints: const BoxConstraints(maxWidth: 150),
+                            child: CustomText(
+                                text: stockOutList.stockOutList[index].name),
+                          )),
+                          DataCell(Container(
+                            constraints: const BoxConstraints(maxWidth: 150),
+                            child: CustomText(
+                                text:
+                                    stockOutList.stockOutList[index].serialNo),
+                          )),
+                          DataCell(Container(
+                            constraints: const BoxConstraints(maxWidth: 150),
+                            child: CustomText(
+                                text: stockOutList.stockOutList[index].modelNo),
+                          )),
                           DataCell(CustomText(
-                              text: stockOutList.stockOutList[index].name)),
-                          DataCell(CustomText(
-                              text: stockOutList.stockOutList[index].serialNo)),
-                          DataCell(CustomText(
-                              text: stockOutList.stockOutList[index].modelNo)),
+                              text: stockOutList
+                                  .stockOutList[index].mainCategory)),
                           DataCell(CustomText(
                               text: stockOutList.stockOutList[index].category)),
                           DataCell(CustomText(

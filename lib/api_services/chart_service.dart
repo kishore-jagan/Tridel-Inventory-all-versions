@@ -1,8 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, avoid_print
 
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -56,20 +54,6 @@ class ChartController extends GetxController {
             entry.key, // Use category as both category and mainCategory
           );
         }).toList();
-
-        // data.value = jsonData.map((item) {
-        //   final date = DateTime.parse(item['date']);
-        //   final qty = item['qty'];
-        //   final name = item['name'] ?? 'Unknown';
-        //   final mainCategory = item['main_category'] ?? 'unKnown';
-
-        //   return SalesData(
-        //     date,
-        //     qty is int ? qty.toDouble() : double.parse(qty),
-        //     name,
-        //     mainCategory,
-        //   );
-        // }).toList();
       } else {
         throw Exception('Failed to load data');
       }

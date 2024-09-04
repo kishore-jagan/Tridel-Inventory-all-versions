@@ -10,15 +10,16 @@ class BoxService {
   Future<List<BoxModel>?> fetchBox() async {
     var response =
         await http.get(Uri.parse("${ApiConfig.baseUrl}${ApiConfig.getBox}"));
-    print("Response body: ${response.body}");
+    // print("Response body: ${response.body}");
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       var boxes = data['data'];
       List<BoxModel> boxList =
           (boxes as List).map((e) => BoxModel.fromJson(e)).toList();
-      print("boxxxx: $boxList");
+      // print("boxxxx: $boxList");
       return boxList;
     } else {
+      // ignore: avoid_print
       print("Failed to fetch boxes with status code: ${response.statusCode}");
       return null;
     }

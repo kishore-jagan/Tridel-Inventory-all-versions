@@ -272,6 +272,7 @@ class _BarCodePageState extends State<BarCodePage> {
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: DropdownButton<String>(
+          isExpanded: true,
           value: value,
           items: buildDropdownMenuItems(['All Vendor'] + items),
           onChanged: onChanged,

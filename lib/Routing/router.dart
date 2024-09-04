@@ -3,9 +3,9 @@ import 'package:inventory/Pages/Authentication/authentication.dart';
 import 'package:inventory/Pages/BarCode/barcode.dart';
 import 'package:inventory/Pages/Dispatch/dispatch.dart';
 import 'package:inventory/Pages/Employee/employee.dart';
-import 'package:inventory/Pages/Inventory/inventory.dart';
 import 'package:inventory/Pages/Overview/overview.dart';
 import 'package:inventory/Pages/Products/products.dart';
+import 'package:inventory/Pages/Returnable/returnable.dart';
 import 'package:inventory/Routing/routes.dart';
 
 import '../Pages/Inventory/widgets/add_box.dart';
@@ -23,15 +23,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case userPageRoute:
       return getPageRoute(const EmployeePage());
     case authenticationPageRoute:
-      return getPageRoute(AuthenticationPage());
+      return getPageRoute(const AuthenticationPage());
     case barcodePageroute:
       return getPageRoute(const BarCodePage());
     case dispatchPageRoute:
-      return getPageRoute(DispatchPage());
+      return getPageRoute(const DispatchPage());
+    case returnableRoute:
+      return getPageRoute(ReturnableItemsPage());
     case pendingtaskRoute:
       return getPageRoute(const Pendingtask());
     case trashRoute:
       return getPageRoute(const TrashPage());
+
     default:
       return getPageRoute(const OverViewPage());
   }

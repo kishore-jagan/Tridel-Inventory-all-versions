@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,7 +20,7 @@ class AddBoxController extends GetxController {
   final TextEditingController productName = TextEditingController();
   final TextEditingController qty = TextEditingController();
 
-  RxString selectedMos = "ByRoad".obs;
+  String selectedMos = "ByRoad";
   List<String> mosList = ["ByRoad", "ByAir", "ByTrain", "ByShip"];
 
   final List<Map<String, dynamic>> list = [];
@@ -55,14 +57,18 @@ class AddBoxController extends GetxController {
 
       if (response.statusCode == 200) {
         Toaster().showsToast(data['message'], Colors.green, Colors.white);
-        Get.snackbar("Success", "${data['message']}");
+        // Get.snackbar("Success", "${data['message']}");
+        // BoxController().fetchBoxes();
         return "ok";
       } else {
-        Get.snackbar("Success", "${data['message']}");
+        Toaster().showsToast(data['message'], Colors.red, Colors.white);
+        // Get.snackbar("error", "${data['message']}");
         return "bad";
       }
     } catch (e) {
-      print(e);
+      Toaster()
+          .showsToast('Error: Something went wrong', Colors.red, Colors.white);
+      print('$e');
       return "bad";
     }
     // Convert the list of products to a JSON string

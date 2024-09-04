@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +9,7 @@ import 'package:inventory/api_services/auth_service_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationPage extends StatefulWidget {
-  AuthenticationPage({super.key});
+  const AuthenticationPage({super.key});
 
   @override
   State<AuthenticationPage> createState() => _AuthenticationPageState();
@@ -32,7 +34,6 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getCreds();
   }

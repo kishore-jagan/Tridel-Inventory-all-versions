@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_build_context_synchronously
+// ignore_for_file: file_names, use_build_context_synchronously, avoid_print
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:inventory/Widgets/custom_text.dart';
 import 'package:inventory/Widgets/elevated_button.dart';
 import 'package:inventory/api_services/boxController.dart';
 
+import '../../Constants/controllers.dart';
 import '../../Constants/style.dart';
 import '../../Helpers/responsiveness.dart';
 import '../../model/box_model.dart';
@@ -23,6 +24,7 @@ class _PendingtaskState extends State<Pendingtask> {
   final BoxController _box = Get.put(BoxController());
   final verticalScrollController = ScrollController();
   final horizontalScrollController = ScrollController();
+  final Map<String, dynamic> data = {};
   @override
   void initState() {
     super.initState();
@@ -77,7 +79,18 @@ class _PendingtaskState extends State<Pendingtask> {
   Widget build(BuildContext context) {
     var box = _box.boxes;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Container(
+          margin: EdgeInsets.only(
+              top: ResponsiveWidget.isSmallScreen(context) ? 56 : 6),
+          child: CustomText(
+            text: menuController.activeItem.value,
+            size: 24,
+            weight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
         Expanded(
           child: Obx(() {
             if (_box.boxes.isEmpty) {
@@ -104,12 +117,12 @@ class _PendingtaskState extends State<Pendingtask> {
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
                         columnSpacing: ResponsiveWidget.isLargeScreen(context)
-                            ? MediaQuery.of(context).size.width / 16
+                            ? MediaQuery.of(context).size.width / 26
                             : ResponsiveWidget.isCustomScreen(context)
-                                ? MediaQuery.of(context).size.width / 22
+                                ? MediaQuery.of(context).size.width / 52
                                 : ResponsiveWidget.isMediumScreen(context)
-                                    ? MediaQuery.of(context).size.width / 36
-                                    : MediaQuery.of(context).size.width / 74,
+                                    ? MediaQuery.of(context).size.width / 120
+                                    : MediaQuery.of(context).size.width / 120,
                         horizontalMargin:
                             ResponsiveWidget.isLargeScreen(context) ? 30 : 10,
                         columns: column,
@@ -146,7 +159,7 @@ class _PendingtaskState extends State<Pendingtask> {
                                                     box[index].token);
 
                                             if (data!.isNotEmpty) {
-                                              String val = await Navigator.of(
+                                              bool val = await Navigator.of(
                                                       context)
                                                   .push(MaterialPageRoute(
                                                       builder: (context) =>
@@ -166,9 +179,12 @@ class _PendingtaskState extends State<Pendingtask> {
                                                                 'location'],
                                                             mos: data['mos'],
                                                           )));
-                                              if (val == "true") {
+                                              if (val == true) {
+                                                print("true");
                                                 setState(() {
                                                   data.clear();
+                                                  _box.boxes.clear();
+                                                  _box.fetchBoxes();
                                                 });
                                               }
                                             }

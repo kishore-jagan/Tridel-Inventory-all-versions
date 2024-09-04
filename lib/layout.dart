@@ -13,6 +13,7 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: splineColor,
       key: scaffoldKey,
       // extendBodyBehindAppBar: true,
       appBar: topNavigationBar(context, scaffoldKey),

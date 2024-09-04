@@ -10,7 +10,7 @@ class LargeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(defaultPadding * 1.5),
+      padding: const EdgeInsets.all(defaultPadding * 1.5),
       child: Row(
         children: [
           const Expanded(

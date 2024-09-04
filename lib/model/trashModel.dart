@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class Trash {
   final String id;
   final String name;

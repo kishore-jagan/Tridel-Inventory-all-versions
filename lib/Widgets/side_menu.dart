@@ -14,22 +14,22 @@ class SideMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
           horizontal: defaultPadding, vertical: defaultPadding),
       decoration: BoxDecoration(
           color: secondaryColor,
           borderRadius: ResponsiveWidget.isSmallScreen(context)
-              ? BorderRadius.all(Radius.circular(8))
-              : BorderRadius.all(Radius.circular(30))),
+              ? const BorderRadius.all(Radius.circular(8))
+              : const BorderRadius.all(Radius.circular(30))),
       child: ListView(
         children: [
           ResponsiveWidget.isLargeScreen(context)
               ? SizedBox(
                   height: 90,
                   child: DrawerHeader(
-                      padding: EdgeInsets.only(left: defaultPadding * 1.5),
+                      padding:
+                          const EdgeInsets.only(left: defaultPadding * 1.5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,7 +41,7 @@ class SideMenu extends StatelessWidget {
                                 height: 40,
                                 fit: BoxFit.cover,
                               ),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
                               Text(
                                 "Admin Panel",
                                 style: Theme.of(context)
@@ -67,7 +67,8 @@ class SideMenu extends StatelessWidget {
               : SizedBox(
                   height: 120,
                   child: DrawerHeader(
-                      padding: EdgeInsets.only(left: defaultPadding * 1.5),
+                      padding:
+                          const EdgeInsets.only(left: defaultPadding * 1.5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,7 +98,7 @@ class SideMenu extends StatelessWidget {
                         ],
                       )),
                 ),
-          SizedBox(height: defaultPadding),
+          const SizedBox(height: defaultPadding),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: sideMenuItems
@@ -121,10 +122,12 @@ class SideMenu extends StatelessWidget {
                     ))
                 .toList(),
           ),
+          // SizedBox(
+          //   height: MediaQuery.of(context).size.height / 45,
+          // ),
           SizedBox(
-            height: MediaQuery.of(context).size.height / 16,
-          ),
-          Expanded(child: const InformationWarning()),
+              height: MediaQuery.of(context).size.height / 5,
+              child: const InformationWarning()),
           SideMenuItem(
             itemName: pendingWorkDisplayName,
             onTap: () {

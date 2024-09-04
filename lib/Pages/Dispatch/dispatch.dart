@@ -1,22 +1,25 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:inventory/Constants/controllers.dart';
 import 'package:inventory/Pages/Inventory/widgets/vendor_search.dart';
 import 'package:inventory/Widgets/custom_button.dart';
+import 'package:inventory/Widgets/custom_search_field.dart';
 import 'package:inventory/Widgets/custom_text.dart';
 import 'package:inventory/Widgets/elevated_button.dart';
 import 'package:inventory/api_services/dispatch_service_controller.dart';
 import '../../../api_services/products_service_controller.dart';
+import '../../Constants/toaster.dart';
 import '../../Widgets/custom_text_field.dart';
 import '../../Widgets/dropdown.dart';
 import '../../helpers/responsiveness.dart';
+import '../Inventory/widgets/receiver_search.dart';
 import 'Widget/dispatchList_products.dart';
 import 'Widget/editProduct_popup.dart';
 
 class DispatchPage extends StatefulWidget {
-  DispatchPage({super.key});
+  const DispatchPage({super.key});
 
   @override
   State<DispatchPage> createState() => _DispatchPageState();
@@ -27,11 +30,11 @@ class _DispatchPageState extends State<DispatchPage> {
 
   final DispatchController dispatchController = Get.put(DispatchController());
 
-  final GlobalKey<VendorSearchState> vendorSearchKey =
+  final GlobalKey<VendorSearchState> customerSearchKey =
       GlobalKey<VendorSearchState>();
 
-  final GlobalKey<VendorSearchState> vendorSearchKey2 =
-      GlobalKey<VendorSearchState>();
+  final GlobalKey<ReceiverSearchState> senderSearchKey =
+      GlobalKey<ReceiverSearchState>();
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +62,18 @@ class _DispatchPageState extends State<DispatchPage> {
                       ),
                     ),
                     const Spacer(),
+                    SizedBox(
+                      height: 50,
+                      width: 400,
+                      child: CustomSearchField(
+                        radius: const BorderRadius.all(Radius.circular(10)),
+                        onChanged: (value) {
+                          setState(() {
+                            dispatchController.searchQuery.value = value;
+                          });
+                        },
+                      ),
+                    ),
                     CustomButton(
                       onTap: () {
                         Get.to(() => DispatchedProductsPage());
@@ -68,6 +83,7 @@ class _DispatchPageState extends State<DispatchPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView(children: [
                     const SizedBox(height: 10),
@@ -109,7 +125,7 @@ class _DispatchPageState extends State<DispatchPage> {
                                         ),
                                       ),
                                       VendorSearch(
-                                        key: vendorSearchKey,
+                                        key: customerSearchKey,
                                         controller: dispatchController
                                             .customerNameController,
                                       ),
@@ -135,32 +151,22 @@ class _DispatchPageState extends State<DispatchPage> {
                                     child: CustomTextField(
                                   textEditingController:
                                       dispatchController.pnoController,
-                                  // hintText: 'Model Number',
                                   fieldTitle: 'Project No',
                                 )),
                                 const SizedBox(width: 50),
                                 Flexible(
                                     child: CustomDropDown(
                                         items: dispatchController.mosList,
-                                        val: dispatchController
-                                            .selectedMos.value,
+                                        val: dispatchController.selectedMos,
                                         onChanged: (newValue) {
                                           setState(() {
-                                            dispatchController
-                                                .selectedMos.value = newValue!;
+                                            dispatchController.selectedMos =
+                                                newValue!;
                                           });
                                         },
                                         fieldTitle: 'Mode of Shipment')),
-                                // Flexible(
-                                //     child: CustomTextField(
-                                //   fieldTitle: 'Mode of transport',
-                                //   textEditingController:
-                                //       dispatchController.mosController,
-                                //   // hintText: 'Enter Product Name',
-                                // )),
                               ],
                             ),
-
                             const SizedBox(height: 10.0),
                             Row(
                               children: [
@@ -173,46 +179,70 @@ class _DispatchPageState extends State<DispatchPage> {
                                         padding: EdgeInsets.only(
                                             left: 10.0, top: 8.0, bottom: 4.0),
                                         child: Text(
-                                          'Customer name',
+                                          'Sender name',
                                           style: TextStyle(fontSize: 16.0),
                                         ),
                                       ),
-                                      VendorSearch(
-                                        key: vendorSearchKey2,
+                                      ReceiverSearch(
+                                        key: senderSearchKey,
                                         controller: dispatchController
                                             .senderNameController,
                                       ),
                                     ],
                                   ),
                                 ),
-                                // Flexible(
-                                //     child: CustomTextField(
-                                //   textEditingController: dispatchController
-                                //       .senderNameController,
-                                //   // hintText: 'Model Number',
-                                //   fieldTitle: 'Sender Name',
-                                // )),
                                 const SizedBox(width: 50),
                                 Flexible(
                                   child: CustomTextField(
                                     fieldTitle: 'Remarks',
                                     textEditingController: dispatchController
                                         .dispatchRemarksController,
-                                    // hintText: 'Enter Product Name',
                                   ),
                                 ),
                               ],
                             ),
-                            // CustomTextField(
-                            //   fieldTitle: 'Remarks',
-                            //   textEditingController: dispatchController
-                            //       .dispatchRemarksController,
-                            //   // hintText: 'Enter Product Name',
-                            // ),
                             const SizedBox(height: 20),
                             Button(
-                                onPressed: () {
-                                  dispatchController.dispatchProducts();
+                                onPressed: () async {
+                                  dispatchController.isLoading.value = true;
+                                  if (dispatchController.customerNameController
+                                          .text.isNotEmpty &&
+                                      dispatchController
+                                          .invoiceController.text.isNotEmpty &&
+                                      dispatchController
+                                          .pnoController.text.isNotEmpty &&
+                                      dispatchController.senderNameController
+                                          .text.isNotEmpty &&
+                                      dispatchController
+                                          .dispatchRemarksController
+                                          .text
+                                          .isNotEmpty &&
+                                      dispatchController
+                                          .selectedProducts.isNotEmpty) {
+                                    String status = await dispatchController
+                                        .dispatchProducts();
+                                    if (status == 'ok') {
+                                      dispatchController.customerNameController
+                                          .clear();
+                                      dispatchController.invoiceController
+                                          .clear();
+                                      dispatchController.pnoController.clear();
+                                      dispatchController.senderNameController
+                                          .clear();
+                                      dispatchController
+                                          .dispatchRemarksController
+                                          .clear();
+                                      dispatchController.selectedProducts
+                                          .clear();
+                                    }
+                                  } else {
+                                    dispatchController.isLoading.value = false;
+                                    print("null value handled");
+                                    Toaster().showsToast(
+                                        'Please fill all fields',
+                                        Colors.red,
+                                        Colors.white);
+                                  }
                                 },
                                 text: 'Dispatch'),
                             const SizedBox(height: 20),
@@ -233,7 +263,15 @@ class _DispatchPageState extends State<DispatchPage> {
   List<Widget> _buildCategoryList() {
     Map<String, List<Map<String, dynamic>>> categorizedProducts = {};
 
-    for (var product in productsController.dataListProduct) {
+    String searchQuery = dispatchController.searchQuery.value.toLowerCase();
+    List<dynamic> filteredProducts =
+        productsController.dataListProduct.where((product) {
+      String name = product['name'].toString().toLowerCase();
+      String modelNo = product['model_no'].toString().toLowerCase();
+      return name.contains(searchQuery) || modelNo.contains(searchQuery);
+    }).toList();
+
+    for (var product in filteredProducts) {
       String category = product['category'];
       if (!categorizedProducts.containsKey(category)) {
         categorizedProducts[category] = [];

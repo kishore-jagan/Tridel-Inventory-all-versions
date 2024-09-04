@@ -6,23 +6,17 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../Widgets/custom_text.dart';
 
-class StockoutPie extends StatelessWidget {
-  StockoutPie({super.key});
+class StockoutCategoryPie extends StatelessWidget {
+  StockoutCategoryPie({super.key});
   final ChartController chartController = Get.put(ChartController());
-
-  // final Map<String, Color> categoryColors = {
-  //   'GeoScience': geoScience,
-  //   'GeoInformatics': geoInformatics,
-  //   'GeoEngineering': geoEngineering,
-  //   'ESS': ess,
-  // };
 
   final Map<String, Color> categoryColors = {
     'Electrical': electrical,
     'Mechanical': mechanical,
     'IT': it,
-    'Finance': finance,
-    'Consumables': consumables
+    'Accounts': accounts,
+    'Admin': admin,
+    'General': general
   };
 
   @override
@@ -32,33 +26,29 @@ class StockoutPie extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       } else {
         final List<SalesData> data = chartController.categoryChart;
-        print('Fetched Data: ${chartController.data}');
+        // print('Fetched Data: ${chartController.data}');
 
         if (data.isEmpty) {
-          return Center(child: Text('No data available.'));
-        }
-        print('Chart Data:');
-        for (var item in data) {
-          print('Name: ${item.name}, Qty: ${item.qty}');
+          return const Center(child: Text('No data available.'));
         }
         return Stack(
           children: [
             Container(
-              margin: EdgeInsets.symmetric(horizontal: defaultPadding),
-              padding: EdgeInsets.symmetric(
+              margin: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              padding: const EdgeInsets.symmetric(
                   horizontal: defaultPadding * 2, vertical: defaultPadding),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 238, 250, 255),
                   borderRadius: BorderRadius.all(Radius.circular(10))),
               child: Column(
                 children: [
-                  CustomText(
+                  const CustomText(
                     text: "Stock Out Chart",
                     size: 20,
                     weight: FontWeight.bold,
                     color: secondaryColor,
                   ),
-                  SizedBox(height: defaultPadding),
+                  const SizedBox(height: defaultPadding),
                   SfCircularChart(
                     tooltipBehavior: TooltipBehavior(
                       enable: true,
@@ -100,7 +90,7 @@ class StockoutPie extends StatelessWidget {
                             categoryColors[data.name] ?? Colors.grey,
                       ),
                     ],
-                    legend: Legend(
+                    legend: const Legend(
                         isVisible: true,
                         position: LegendPosition.left,
                         textStyle: TextStyle(

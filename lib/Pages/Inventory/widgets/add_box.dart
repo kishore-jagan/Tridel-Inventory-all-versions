@@ -1,8 +1,9 @@
-// ignore_for_file: depend_on_referenced_packages
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: depend_on_referenced_packages, avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:inventory/Constants/toaster.dart';
+import 'package:inventory/Pages/Inventory/widgets/receiver_search.dart';
 import 'package:inventory/Widgets/custom_text_field.dart';
 import 'package:inventory/Widgets/elevated_button.dart';
 import '../../../Constants/controllers.dart';
@@ -20,10 +21,11 @@ class BoxAddPage extends StatefulWidget {
 }
 
 class _BoxAddPageState extends State<BoxAddPage> {
-  final GlobalKey<VendorSearchState> vendorSearchKey =
+  final GlobalKey<VendorSearchState> supplierKey =
       GlobalKey<VendorSearchState>();
-  final GlobalKey<VendorSearchState> vendorSearchKey2 =
-      GlobalKey<VendorSearchState>();
+  final GlobalKey<ReceiverSearchState> receiverKey =
+      GlobalKey<ReceiverSearchState>();
+
   final AddBoxController addBoxController = Get.put(AddBoxController());
   @override
   Widget build(BuildContext context) {
@@ -51,7 +53,7 @@ class _BoxAddPageState extends State<BoxAddPage> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
@@ -86,7 +88,7 @@ class _BoxAddPageState extends State<BoxAddPage> {
                               ),
                             ),
                             VendorSearch(
-                                key: vendorSearchKey,
+                                key: supplierKey,
                                 controller: addBoxController.supplierName),
                           ],
                         ),
@@ -160,11 +162,10 @@ class _BoxAddPageState extends State<BoxAddPage> {
                         Flexible(
                             child: CustomDropDown(
                                 items: addBoxController.mosList,
-                                val: addBoxController.selectedMos.value,
+                                val: addBoxController.selectedMos,
                                 onChanged: (newValue) {
                                   setState(() {
-                                    addBoxController.selectedMos.value =
-                                        newValue!;
+                                    addBoxController.selectedMos = newValue!;
                                   });
                                 },
                                 fieldTitle: 'Mode of Shipment')),
@@ -173,6 +174,12 @@ class _BoxAddPageState extends State<BoxAddPage> {
                     const SizedBox(height: 10.0),
                     Row(
                       children: [
+                        // Flexible(
+                        //     child: CustomTextField(
+                        //   textEditingController: addBoxController.reciever,
+                        //   // hintText: 'Model Number',
+                        //   fieldTitle: 'Receiver Name',
+                        // )),
                         Flexible(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,18 +195,12 @@ class _BoxAddPageState extends State<BoxAddPage> {
                                   style: TextStyle(fontSize: 16.0),
                                 ),
                               ),
-                              VendorSearch(
-                                  key: vendorSearchKey2,
+                              ReceiverSearch(
+                                  key: receiverKey,
                                   controller: addBoxController.reciever),
                             ],
                           ),
                         ),
-                        // Flexible(
-                        //   child: CustomTextField(
-                        //     textEditingController: addBoxController.reciever,
-                        //     fieldTitle: "Reciever Name",
-                        //   ),
-                        // ),
                         const SizedBox(width: 50),
                         Flexible(
                           child: CustomTextField(
@@ -243,8 +244,6 @@ class _BoxAddPageState extends State<BoxAddPage> {
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 24),
                     ),
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      // crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Flexible(
                           child: CustomTextField(
@@ -262,6 +261,14 @@ class _BoxAddPageState extends State<BoxAddPage> {
                                 child: CustomTextField(
                                   textEditingController: addBoxController.qty,
                                   fieldTitle: "qty",
+                                  keyboard:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  textInput: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}$'),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(
@@ -326,21 +333,26 @@ class _BoxAddPageState extends State<BoxAddPage> {
                                             "${addBoxController.list[index]['qty']}")),
                                         DataCell(
                                           IconButton(
-                                            icon: Icon(
+                                            icon: const Icon(
                                                 Icons.remove_circle_outline),
                                             color: Colors.red,
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              setState(() {
+                                                addBoxController.list
+                                                    .removeAt(index);
+                                              });
+                                            },
                                           ),
                                         ),
                                       ])),
                             ),
                           ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
                     Row(
                       children: [
-                        Spacer(),
+                        const Spacer(),
                         Button(
                             onPressed: () async {
                               if (addBoxController.billNo.text.isNotEmpty &&
@@ -357,6 +369,7 @@ class _BoxAddPageState extends State<BoxAddPage> {
                                 String status = await addBoxController.save();
                                 if (status == 'ok') {
                                   setState(() {
+                                    // BoxController().fetchBoxes();
                                     addBoxController.billNo.clear();
                                     addBoxController.date.clear();
                                     addBoxController.poNo.clear();
@@ -368,7 +381,12 @@ class _BoxAddPageState extends State<BoxAddPage> {
                                     addBoxController.list.clear();
                                   });
                                 }
-                              } else {}
+                              } else {
+                                addBoxController.isLoading.value = false;
+                                print('Null value handled');
+                                Toaster().showsToast('Please fill all fields',
+                                    Colors.red, Colors.white);
+                              }
                             },
                             text: "Submit"),
                       ],

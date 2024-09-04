@@ -17,8 +17,9 @@ const splineColor = Color.fromARGB(255, 164, 180, 250);
 const electrical = Colors.orange;
 const mechanical = Colors.green;
 const it = Colors.blue;
-const finance = Colors.red;
-const consumables = Colors.pink;
+const admin = Colors.red;
+const accounts = Colors.pink;
+const general = Colors.purple;
 
 const geoScience = Colors.orange;
 const geoInformatics = Colors.lightGreen;

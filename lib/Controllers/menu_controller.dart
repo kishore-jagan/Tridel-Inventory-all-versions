@@ -36,6 +36,12 @@ class MenuController extends GetxController {
         return customIcon(Icons.local_shipping, itemName);
       case authenticationPageDisplayName:
         return customIcon(Icons.exit_to_app, itemName);
+      case returnableDisplayName:
+        return customIcon(Icons.restart_alt, itemName);
+      case pendingWorkDisplayName:
+        return customIcon(Icons.pending_actions, itemName);
+      case trashDisplayName:
+        return customIcon(Icons.restore_from_trash, itemName);
       default:
         return customIcon(Icons.exit_to_app, itemName);
     }

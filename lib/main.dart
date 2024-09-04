@@ -40,7 +40,8 @@ class MyApp extends StatelessWidget {
                 return Layout();
               }),
           GetPage(
-              name: authenticationPageRoute, page: () => AuthenticationPage()),
+              name: authenticationPageRoute,
+              page: () => const AuthenticationPage()),
         ],
         debugShowCheckedModeBanner: false,
         title: 'DashBoard',

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 
 class IconTextButton extends StatefulWidget {
@@ -10,7 +12,8 @@ class IconTextButton extends StatefulWidget {
   final Color textColor;
   final Color hoverTextColor;
 
-  IconTextButton({
+  const IconTextButton({
+    super.key,
     required this.onPressed,
     required this.icon,
     required this.label,

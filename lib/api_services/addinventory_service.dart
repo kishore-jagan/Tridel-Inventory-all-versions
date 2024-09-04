@@ -150,13 +150,15 @@ class InventoryController extends GetxController {
         print('response body : ${response.body}');
         Map<String, dynamic> data = json.decode(response.body);
         // print("Response: $data");
-
+        print(data['status']);
         if (data['status'] == 'success') {
           final String remark = data['remark'];
           Toaster().showsToast(remark, Colors.green, Colors.white);
 
           await addVendor();
+          await addReceiver();
           clearFields();
+          print("ok");
           return "ok";
         } else {
           final String message = data['remark'];
@@ -175,8 +177,8 @@ class InventoryController extends GetxController {
       return "bad";
     } finally {
       isLoading.value = false;
-      return "bad";
     }
+    return "bad";
   }
 
   void clearFields() {
@@ -219,6 +221,32 @@ class InventoryController extends GetxController {
       }
     } catch (e) {
       print('Error adding vendor: $e');
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> addReceiver() async {
+    try {
+      isLoading.value = true;
+      var response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.addReceiver}'),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          "receiverName": receiversController.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("receiver added: $data");
+        isLoading.value = false;
+      } else {
+        print("Failed to add receiver. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error adding receiver: $e');
       isLoading.value = false;
     }
   }

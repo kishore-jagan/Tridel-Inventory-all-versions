@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously, unrelated_type_equality_checks
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,13 +7,14 @@ import 'package:inventory/Widgets/custom_text_field.dart';
 import 'package:inventory/Widgets/dropdown.dart';
 import 'package:inventory/Widgets/elevated_button.dart';
 import 'package:inventory/api_services/addinventory_service.dart';
+import 'package:inventory/api_services/boxController.dart';
 
 import '../../Constants/controllers.dart';
 import '../../Constants/toaster.dart';
 import '../../Widgets/custom_text.dart';
 import '../../api_services/products_service_controller.dart';
+import '../../api_services/update_box_service.dart';
 import '../../helpers/responsiveness.dart';
-import 'widgets/vendor_search.dart';
 
 class InventoryPage extends StatefulWidget {
   final String token;
@@ -46,8 +47,9 @@ class _InventoryPageState extends State<InventoryPage> {
   final ProductsController productsController = Get.put(ProductsController());
   final InventoryController inventoryController =
       Get.put(InventoryController());
-  final GlobalKey<VendorSearchState> vendorSearchKey =
-      GlobalKey<VendorSearchState>();
+  // final GlobalKey<VendorSearch2State> vendorSearchKey2 =
+  //     GlobalKey<VendorSearch2State>();
+  final BoxController _box = Get.put(BoxController());
 
   @override
   void initState() {
@@ -60,6 +62,14 @@ class _InventoryPageState extends State<InventoryPage> {
     inventoryController.receiversController.text = widget.recieverName;
     inventoryController.placeController.text = widget.location;
     inventoryController.selectedMos = widget.mos;
+    print(widget.supplierName);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        // Reassign values or force rebuild if necessary
+        print("Vendor: == ${inventoryController.vendorNameController.text}");
+        print("Receiver: == ${inventoryController.receiversController.text}");
+      });
+    });
   }
 
   @override
@@ -386,28 +396,35 @@ class _InventoryPageState extends State<InventoryPage> {
                             Row(
                               children: [
                                 Flexible(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 10.0, top: 8.0, bottom: 4.0),
-                                        child: Text(
-                                          'Vendor name',
-                                          style: TextStyle(fontSize: 16.0),
-                                        ),
-                                      ),
-                                      VendorSearch(
-                                          key: vendorSearchKey,
-                                          controller: inventoryController
-                                              .vendorNameController),
-                                    ],
-                                  ),
-                                ),
+                                    child: CustomTextField(
+                                  textEditingController:
+                                      inventoryController.vendorNameController,
+                                  // hintText: 'Model Number',
+                                  fieldTitle: 'Supplier Name',
+                                )),
+                                // Flexible(
+                                //   child: Column(
+                                //     crossAxisAlignment:
+                                //         CrossAxisAlignment.start,
+                                //     children: [
+                                //       const SizedBox(
+                                //         height: 10,
+                                //       ),
+                                //       const Padding(
+                                //         padding: EdgeInsets.only(
+                                //             left: 10.0, top: 8.0, bottom: 4.0),
+                                //         child: Text(
+                                //           'Vendor name',
+                                //           style: TextStyle(fontSize: 16.0),
+                                //         ),
+                                //       ),
+                                //       VendorSearch2(
+                                //           key: vendorSearchKey2,
+                                //           controller: inventoryController
+                                //               .vendorNameController),
+                                //     ],
+                                //   ),
+                                // ),
                                 const SizedBox(
                                   width: 50,
                                 ),
@@ -495,8 +512,8 @@ class _InventoryPageState extends State<InventoryPage> {
                                 onPressed: () async {
                                   try {
                                     setState(() {
-                                      vendorSearchKey.currentState
-                                          ?.setSelectedVendor();
+                                      // vendorSearchKey.currentState
+                                      //     .setSelectedVendor();
                                     });
                                     inventoryController.isLoading.value = true;
                                     if (inventoryController
@@ -564,10 +581,30 @@ class _InventoryPageState extends State<InventoryPage> {
                                       print("Started");
 
                                       // String status =
-                                      await inventoryController.saveData();
-                                      productsController.fetchListProducts();
-                                      // Get.back(result: "true");
-                                      Navigator.pop(context, true);
+                                      String stat =
+                                          await inventoryController.saveData();
+                                      print(stat);
+                                      if (stat == 'ok') {
+                                        productsController.fetchListProducts();
+                                        // Get.back(result: "true");
+                                        _box.boxes.clear();
+                                        bool status = await UpdateBox()
+                                            .boxUpdate(widget.name, widget.qty,
+                                                widget.token);
+                                        if (status) {
+                                          print("status : === $status");
+                                          Get.snackbar("Success",
+                                              "Details updated Successfully");
+                                          productsController
+                                              .fetchListProducts();
+                                          inventoryController.clearFields();
+                                          _box.fetchBoxes();
+                                          Get.back();
+                                          Navigator.pop(context);
+                                          print("End");
+                                        }
+                                      }
+
                                       // if (status == 'ok') {
                                       //   setState(() {
                                       //     Get.back();

@@ -57,7 +57,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
                       columnSpacing: ResponsiveWidget.isLargeScreen(context)
-                          ? MediaQuery.of(context).size.width / 14
+                          ? MediaQuery.of(context).size.width / 15
                           : ResponsiveWidget.isCustomScreen(context)
                               ? MediaQuery.of(context).size.width / 18
                               : ResponsiveWidget.isMediumScreen(context)
