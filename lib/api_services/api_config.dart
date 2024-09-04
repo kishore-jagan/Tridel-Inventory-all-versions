@@ -4,7 +4,8 @@ class ApiConfig {
   static const String stockCount = '/Inventory/total_productcount.php';
   static const String vendorCount = '/Inventory/vendor_count.php';
   static const String employeeCount = '/Inventory/employee_count.php';
-  static const String chartData = '/Inventory/chart_data.php';
+  // static const String stockInChartData = '/Inventory/stockinChart_data.php';
+  static const String stockOutChartData = '/Inventory/stockoutChart_data.php';
   static const String stockOutRevenue = '/Inventory/stockout_revenue.php';
   static const String addInventory = '/Inventory/add_inventory.php';
   static const String fetchVendor = '/Inventory/fetch_vendor.php';

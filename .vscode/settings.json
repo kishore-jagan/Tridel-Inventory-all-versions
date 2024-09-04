@@ -1,0 +1,10 @@
+{
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "C:\\Program Files\\Java\\jdk-21.0.2",
+      "default": true
+    }
+  ],
+  "cmake.sourceDirectory": "D:/Kishore/Flutter/Tridel/inventory/linux"
+}

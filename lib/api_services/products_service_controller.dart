@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages, avoid_print
 import 'dart:convert';
 import 'package:excel/excel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -12,6 +13,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 class ProductsController extends GetxController {
   var apiResponse = <Product>[].obs;
+  var data = <SalesData2>[].obs;
   List<dynamic> dataListProduct = <dynamic>[].obs;
   List<dynamic> filteredDataList = <dynamic>[].obs;
   var error = Rxn<String>();
@@ -27,6 +29,7 @@ class ProductsController extends GetxController {
   void onInit() {
     super.onInit();
     fetchListProducts();
+    fetchChartData2();
   }
 
   Future<void> fetchProducts() async {
@@ -80,6 +83,47 @@ class ProductsController extends GetxController {
       print('Error fetching dataaaa: $error');
     } finally {
       isLoading(false);
+    }
+  }
+
+  Future<void> fetchChartData2() async {
+    try {
+      isLoading.value = true;
+
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.fetchProducts}'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        // Ensure you're accessing the correct key in the JSON data
+        if (jsonData['products'] != null) {
+          final List<dynamic> productList = jsonData['products'];
+
+          data.value = productList.map((item) {
+            final date = DateTime.parse(item['date']);
+            final qty = item['qty'];
+            final name = item['name'] ?? 'Unknown';
+            final mainCategory = item['main_category'];
+
+            return SalesData2(
+                date,
+                qty is int ? qty.toDouble() : double.parse(qty),
+                name,
+                mainCategory);
+          }).toList();
+
+          // print('Fetched Data: $data');
+        } else {
+          throw Exception('Products key is missing in the response');
+        }
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching chart data: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -446,4 +490,13 @@ class ProductsController extends GetxController {
       print('Error generating Excel: $e');
     }
   }
+}
+
+class SalesData2 {
+  SalesData2(this.date, this.qty, this.name, this.mainCategory);
+
+  final DateTime date;
+  final double qty;
+  final String name;
+  final String mainCategory;
 }

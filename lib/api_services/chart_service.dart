@@ -24,7 +24,7 @@ class ChartController extends GetxController {
       isLoading.value = true;
 
       final response = await http
-          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.chartData}'));
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.stockOutChartData}'));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
@@ -33,9 +33,14 @@ class ChartController extends GetxController {
           final date = DateTime.parse(item['date']);
           final qty = item['qty'];
           final name = item['name'] ?? 'Unknown';
+          final mainCategory = item['main_category'] ?? 'unKnown';
 
           return SalesData(
-              date, qty is int ? qty.toDouble() : double.parse(qty), name);
+            date,
+            qty is int ? qty.toDouble() : double.parse(qty),
+            name,
+            mainCategory,
+          );
         }).toList();
       } else {
         throw Exception('Failed to load data');
@@ -49,9 +54,10 @@ class ChartController extends GetxController {
 }
 
 class SalesData {
-  SalesData(this.date, this.qty, this.name);
+  SalesData(this.date, this.qty, this.name, this.mainCategory);
 
   final DateTime date;
   final double qty;
   final String name;
+  final String mainCategory;
 }

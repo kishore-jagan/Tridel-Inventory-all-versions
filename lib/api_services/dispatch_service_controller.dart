@@ -15,6 +15,13 @@ import 'package:pdf/widgets.dart' as pw;
 
 class DispatchController extends GetxController {
   final TextEditingController customerNameController = TextEditingController();
+  final TextEditingController invoiceController = TextEditingController();
+  final TextEditingController pnoController = TextEditingController();
+  final TextEditingController mosController = TextEditingController();
+  final TextEditingController senderNameController = TextEditingController();
+  final TextEditingController dispatchRemarksController =
+      TextEditingController();
+
   var selectedProducts = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
 

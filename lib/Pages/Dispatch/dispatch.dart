@@ -7,6 +7,7 @@ import 'package:inventory/Widgets/custom_text.dart';
 import 'package:inventory/Widgets/elevated_button.dart';
 import 'package:inventory/api_services/dispatch_service_controller.dart';
 import '../../../api_services/products_service_controller.dart';
+import '../../Widgets/custom_text_field.dart';
 import '../../helpers/responsiveness.dart';
 import 'Widget/dispatchList_products.dart';
 import 'Widget/editProduct_popup.dart';
@@ -94,6 +95,53 @@ class DispatchPage extends StatelessWidget {
                                   key: vendorSearchKey,
                                   controller:
                                       dispatchController.customerNameController,
+                                ),
+                                const SizedBox(height: 10.0),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: CustomTextField(
+                                      fieldTitle: 'Invoice/Delivery note',
+                                      textEditingController:
+                                          dispatchController.invoiceController,
+                                      // hintText: 'Enter Product Name',
+                                    )),
+                                    const SizedBox(width: 50),
+                                    Flexible(
+                                        child: CustomTextField(
+                                      textEditingController:
+                                          dispatchController.pnoController,
+                                      // hintText: 'Model Number',
+                                      fieldTitle: 'Project No',
+                                    )),
+                                  ],
+                                ),
+                                const SizedBox(height: 10.0),
+                                const SizedBox(height: 10.0),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: CustomTextField(
+                                      fieldTitle: 'Mode of transport',
+                                      textEditingController:
+                                          dispatchController.mosController,
+                                      // hintText: 'Enter Product Name',
+                                    )),
+                                    const SizedBox(width: 50),
+                                    Flexible(
+                                        child: CustomTextField(
+                                      textEditingController: dispatchController
+                                          .senderNameController,
+                                      // hintText: 'Model Number',
+                                      fieldTitle: 'Sender Name',
+                                    )),
+                                  ],
+                                ),
+                                CustomTextField(
+                                  fieldTitle: 'Remarks',
+                                  textEditingController: dispatchController
+                                      .dispatchRemarksController,
+                                  // hintText: 'Enter Product Name',
                                 ),
                                 const SizedBox(height: 50),
                                 Button(
