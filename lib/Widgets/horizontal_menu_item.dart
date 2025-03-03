@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:inventory/Constants/constants.dart';
 import 'package:inventory/Constants/controllers.dart';
 import 'package:inventory/Constants/style.dart';
 import 'package:inventory/Widgets/custom_text.dart';
@@ -36,7 +37,7 @@ class HorizontalMenuItem extends StatelessWidget {
                   child: Container(
                     width: 6,
                     height: 40,
-                    color: dark,
+                    color: light,
                   ),
                 ),
                 SizedBox(
@@ -51,13 +52,13 @@ class HorizontalMenuItem extends StatelessWidget {
                       child: CustomText(
                     text: itemName,
                     color:
-                        menuController.isHovering(itemName) ? dark : lightGray,
+                        menuController.isHovering(itemName) ? light : textColor,
                   ))
                 else
                   Flexible(
                       child: CustomText(
                     text: itemName,
-                    color: dark,
+                    color: light,
                     size: 18,
                     weight: FontWeight.bold,
                   ))

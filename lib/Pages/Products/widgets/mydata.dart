@@ -1,10 +1,14 @@
-// ignore_for_file: depend_on_referenced_packages, unused_local_variable, avoid_print
+// ignore_for_file: depend_on_referenced_packages, unused_local_variable, avoid_print, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:inventory/api_services/api_config.dart';
 
+import '../../../Constants/toaster.dart';
 import '../../../Widgets/custom_text.dart';
+import '../../../Widgets/elevated_button.dart';
 import '../../../api_services/products_service_controller.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,26 +26,45 @@ class MyData extends DataTableSource {
     return DataRow(cells: [
       _buildDataCell((index + 1).toString()),
       _buildDataCell(product['name']),
+      _buildDataCell(product['project_no']),
       _buildDataCell(product['model_no']),
       _buildDataCell(product['serial_no']),
       _buildDataCell(product['vendor_name']),
+      _buildDataCell(product['main_category']),
       _buildDataCell(product['category']),
       _buildDataCell(product['date']),
-      _buildDataCell(product['qty']),
+      _buildDataCell(product['qty'], centerText: true),
       _buildDataCell(product['price']),
       _buildDataCell(product['total_price']),
       _buildActionsCell(context, controller, product),
     ]);
   }
 
-  DataCell _buildDataCell(String value) {
-    return DataCell(CustomText(text: value));
+  DataCell _buildDataCell(String value, {bool centerText = false}) {
+    return DataCell(Container(
+      constraints: const BoxConstraints(maxWidth: 150),
+      // width: 100,
+      child: centerText
+          ? Center(
+              child: CustomText(
+              text: value,
+            ))
+          : CustomText(text: value),
+    ));
   }
 
   DataCell _buildActionsCell(BuildContext context,
       ProductsController controller, Map<String, dynamic> product) {
+    String? msg;
     return DataCell(Row(
       children: [
+        IconButton(
+          icon: const Icon(Icons.info_outline),
+          color: Colors.blueAccent,
+          onPressed: () {
+            _showMoreInfoPopup(context, product);
+          },
+        ),
         IconButton(
           icon: const Icon(Icons.edit),
           color: Colors.indigo,
@@ -52,8 +75,32 @@ class MyData extends DataTableSource {
         IconButton(
           icon: const Icon(Icons.delete),
           color: Colors.redAccent,
-          onPressed: () {
-            _deleteProduct(product['id'].toString(), product["main_category"]);
+          onPressed: () async {
+            bool status = await _deleteProduct(
+                product['id'].toString(), product["main_category"]);
+            if (status) {
+              msg = "Product removed successfully";
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(msg!),
+                  Button(
+                      onPressed: () async {
+                        msg = "Product Undo Successfully";
+                        bool status = await _undo(
+                            product['id'], product['main_category']);
+                        if (status) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Product Undo Successfully")));
+                        }
+                      },
+                      text: "Undo")
+                ],
+              )));
+            }
           },
         ),
       ],
@@ -70,6 +117,8 @@ class MyData extends DataTableSource {
         TextEditingController(text: product['model_no']);
     final TextEditingController quantityController =
         TextEditingController(text: product['qty'].toString());
+    final TextEditingController mainCategoryController =
+        TextEditingController(text: product['main_category']);
     final TextEditingController categoryController =
         TextEditingController(text: product['category']);
     final TextEditingController priceController =
@@ -120,6 +169,7 @@ class MyData extends DataTableSource {
                   'name': nameController.text,
                   'serial_no': serialController.text,
                   'model_no': modelNoController.text,
+                  'main_category': mainCategoryController.text,
                   'category': categoryController.text,
                   'qty': quantityController.text,
                   'Stock_in_out': stockInOutController.text,
@@ -145,6 +195,69 @@ class MyData extends DataTableSource {
           ],
         );
       },
+    );
+  }
+
+  void _showMoreInfoPopup(BuildContext context, Map<String, dynamic> product) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(product['name'], style: const TextStyle(fontSize: 22)),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoText('Project Name', product['project_name']),
+                _buildInfoText('project No', product['project_no']),
+                _buildInfoText('Purchase Order', product['purchase_order']),
+                _buildInfoText('Invoice No', product['invoice_no']),
+                _buildInfoText('Fromwhere', product['place']),
+                _buildInfoText('MOS', product['mos']),
+                _buildInfoText('Receiver Name', product['receiver_name']),
+                _buildInfoText('Type', product['type']),
+                _buildInfoText('Location', product['location']),
+                _buildInfoText('Returnable', product['returnable']),
+                // Add more fields as necessary
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Close', style: TextStyle(fontSize: 18)),
+              onPressed: () {
+                Get.back(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoText(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(
+                fontSize: 17,
+                color: Colors.black,
+              ),
+            ),
+            TextSpan(
+              text: value ?? 'N/A',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 17,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -179,19 +292,95 @@ class MyData extends DataTableSource {
         headers: {'content-type': 'application/x-www-form-urlencoded'},
         body: product,
       );
-      // print('Response status: ${response.statusCode}');
-      // print('Response body: ${response.body}');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        // print("Response: $data");
+        print(data['status']);
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        if (data['status'] == 'success') {
+          final String remark = data['remark'];
+          Toaster().showsToast(remark, Colors.green, Colors.white);
+          print("ok");
+        } else {
+          final String message = data['remark'];
+          Toaster().showsToast(message, Colors.red, Colors.white);
+        }
+      } else {
+        print("Failed to save data. Status code: ${response.statusCode}");
+        print('Response body: ${response.body}');
+      }
     } catch (e) {
       print('Error updating product: $e');
     }
   }
 
-  Future<void> _deleteProduct(String id, String category) async {
-    const String url = '${ApiConfig.baseUrl}${ApiConfig.deleteProduct}';
+  Future<bool> _deleteProduct(String id, String category) async {
+    print(id);
+    print(category);
+    try {
+      var response = await http
+          .post(Uri.parse("${ApiConfig.baseUrl}${ApiConfig.deleteProduct}"),
+              // headers: {
+              //   "Content-Type": "application/json",
+              // },
+              body: {
+            'id': id,
+            'category': category,
+          });
 
-    var response = await http.get(Uri.parse('$url?id=$id&category=$category'));
-    if (response.statusCode == 200) {
-      controller.fetchListProducts();
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          var data = jsonDecode(response.body);
+          print(data);
+          controller.fetchListProducts();
+          return true;
+        } else {
+          print('Empty response from the server');
+          return false;
+        }
+      } else {
+        print('Failed to delete product. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false;
+    }
+  }
+
+  Future<bool> _undo(String id, String category) async {
+    print(id);
+    print(category);
+    try {
+      var response = await http.post(
+        Uri.parse("${ApiConfig.baseUrl}${ApiConfig.undo}"),
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
+        body: {
+          'id': id,
+          'category': category,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        if (response.body.isNotEmpty) {
+          var data = jsonDecode(response.body);
+          print(data);
+          controller.fetchListProducts();
+          return true;
+        } else {
+          print('Empty response from the server');
+          return false;
+        }
+      } else {
+        print('Failed to delete product. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false;
     }
   }
 

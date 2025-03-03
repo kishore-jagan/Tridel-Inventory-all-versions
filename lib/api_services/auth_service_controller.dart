@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:inventory/Constants/toaster.dart';
 import 'package:inventory/api_services/api_config.dart';
 import 'package:inventory/Routing/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constants/controllers.dart';
 
@@ -18,7 +19,7 @@ class AuthController extends GetxController {
   RxString userName = ''.obs;
   RxBool isLoading = false.obs;
 
-  Future<void> loginUser(BuildContext context) async {
+  Future<void> loginUser(BuildContext context, bool check) async {
     try {
       isLoading.value = true;
       var response = await http.post(
@@ -37,8 +38,20 @@ class AuthController extends GetxController {
           Toaster().showsToast(success, Colors.green, Colors.white);
           userName.value = jsonResponse['user']['username'];
 
-          Get.offAllNamed(rootRoute);
-          menuController.changeActiveItemTo(overViewPageDisplayName);
+          if (check == true) {
+            SharedPreferences pref = await SharedPreferences.getInstance();
+            pref.setString('username', userController.text);
+            pref.setString('password', passwordController.text);
+            String? uName = pref.getString('username');
+            String? pass = pref.getString('password');
+            if (uName!.isNotEmpty && pass!.isNotEmpty) {
+              Get.offAllNamed(rootRoute);
+              menuController.changeActiveItemTo(overViewPageDisplayName);
+            }
+          } else {
+            Get.offAllNamed(rootRoute);
+            menuController.changeActiveItemTo(overViewPageDisplayName);
+          }
         } else {
           final msg = jsonResponse['message'];
           Toaster().showsToast(msg, Colors.red, Colors.white);

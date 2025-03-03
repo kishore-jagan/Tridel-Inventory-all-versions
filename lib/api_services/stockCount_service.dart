@@ -9,7 +9,7 @@ class StockCountController extends GetxController {
   var geoscienceCount = ''.obs;
   var geoinformaticsCount = ''.obs;
   var geoengineeringCount = ''.obs;
-  var officeCount = ''.obs;
+  var essCount = ''.obs;
   var vendorcount = ''.obs;
   var employeecount = ''.obs;
 
@@ -21,7 +21,7 @@ class StockCountController extends GetxController {
       geoscienceCount.value = data['table1_total_rows'];
       geoinformaticsCount.value = data['table2_total_rows'];
       geoengineeringCount.value = data['table3_total_rows'];
-      officeCount.value = data['table4_total_rows'];
+      essCount.value = data['table4_total_rows'];
     }
   }
 

@@ -12,11 +12,15 @@ import 'package:pdf/widgets.dart' as pw;
 
 class ProductsController extends GetxController {
   var apiResponse = <Product>[].obs;
+  var categotyChart = <StockinData>[].obs;
+
   List<dynamic> dataListProduct = <dynamic>[].obs;
   List<dynamic> filteredDataList = <dynamic>[].obs;
+  List<dynamic> returnable = <dynamic>[].obs;
   var error = Rxn<String>();
   RxBool isLoading = false.obs;
 
+  String selectedMainCategory = 'All';
   String selectedCategory = 'All';
   String selectedType = 'All';
   String selectedLocation = 'All';
@@ -27,6 +31,8 @@ class ProductsController extends GetxController {
   void onInit() {
     super.onInit();
     fetchListProducts();
+    fetchCategoryChart();
+    // fetchCProducthart();
   }
 
   Future<void> fetchProducts() async {
@@ -45,7 +51,7 @@ class ProductsController extends GetxController {
               .toList();
 
           apiResponse.assignAll(products);
-          print('apiResponse : ${apiResponse}');
+          // print('apiResponse : ${apiResponse}');
         } else {
           throw Exception('Products data is null');
         }
@@ -71,8 +77,13 @@ class ProductsController extends GetxController {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         List<dynamic> productList = data['products'];
-        dataListProduct.assignAll(productList);
-        filteredDataList.assignAll(productList);
+        dataListProduct.assignAll(productList.reversed);
+        filteredDataList.assignAll(productList.reversed);
+        returnable.assignAll(
+          productList
+              .where((item) => item['returnable'] == 'Returnable')
+              .toList(),
+        );
       } else {
         throw Exception('Failed to load data');
       }
@@ -83,15 +94,91 @@ class ProductsController extends GetxController {
     }
   }
 
+  Future<void> updateItemStatus(int id, String status) async {
+    try {
+      var response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.returnable}'),
+        body: json.encode({'id': id, 'status': status}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Status updated successfully');
+      } else {
+        throw Exception('Failed to update status');
+      }
+    } catch (error) {
+      print('Error updating status: $error');
+    }
+  }
+
+  Future<void> fetchCategoryChart() async {
+    try {
+      isLoading.value = true;
+
+      final response = await http
+          .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.fetchProducts}'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        // Ensure you're accessing the correct key in the JSON data
+        if (jsonData['products'] != null) {
+          final List<dynamic> productList = jsonData['products'];
+
+          final Map<String, double> categoryTotals = {};
+
+          for (var item in productList) {
+            final category = item['category'];
+            final qty = item['qty'] is int
+                ? item['qty'].toDouble()
+                : double.parse(item['qty']);
+
+            if (categoryTotals.containsKey(category)) {
+              categoryTotals[category] = categoryTotals[category]! + qty;
+            } else {
+              categoryTotals[category] = qty;
+            }
+          }
+
+          categotyChart.value = categoryTotals.entries.map((entry) {
+            return StockinData(
+              DateTime.now(), // Dummy date
+              entry.value,
+              entry.key, // Category name
+              '', // No need for mainCategory
+              entry.key, // Use category as both category and mainCategory
+            );
+          }).toList();
+
+          // print('Fetched Data: $data');
+        } else {
+          throw Exception('Products key is missing in the response');
+        }
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching chart data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void filterData() {
     filteredDataList.clear();
 
     // Filter based on selected category
-    if (selectedCategory.isNotEmpty && selectedCategory != 'All') {
-      filteredDataList.addAll(dataListProduct
-          .where((product) => product['category'] == selectedCategory));
+
+    if (selectedMainCategory.isNotEmpty && selectedMainCategory != 'All') {
+      filteredDataList.addAll(dataListProduct.where(
+          (product) => product['main_category'] == selectedMainCategory));
     } else {
       filteredDataList.addAll(dataListProduct);
+    }
+
+    if (selectedCategory.isNotEmpty && selectedCategory != 'All') {
+      filteredDataList
+          .retainWhere((category) => category['category'] == selectedCategory);
     }
 
     // Filter based on selected type
@@ -122,6 +209,14 @@ class ProductsController extends GetxController {
       String lowerSearchData = searchData.toLowerCase();
       filteredDataList.retainWhere((product) =>
           product['name'].toString().toLowerCase().contains(lowerSearchData) ||
+          product['project_name']
+              .toString()
+              .toLowerCase()
+              .contains(lowerSearchData) ||
+          product['project_no']
+              .toString()
+              .toLowerCase()
+              .contains(lowerSearchData) ||
           product['vendor_name']
               .toString()
               .toLowerCase()
@@ -134,7 +229,7 @@ class ProductsController extends GetxController {
               .toString()
               .toLowerCase()
               .contains(lowerSearchData) ||
-          product['category']
+          product['receiver_name']
               .toString()
               .toLowerCase()
               .contains(lowerSearchData));
@@ -163,7 +258,7 @@ class ProductsController extends GetxController {
               : i + itemsPerPage,
         );
 
-        // Accumulate totals for this chunk
+        // Accumulate totals for this chunks
         int totalQty = 0;
         double totalAmount = 0;
         double totalTotalAmount = 0;
@@ -446,4 +541,14 @@ class ProductsController extends GetxController {
       print('Error generating Excel: $e');
     }
   }
+}
+
+class StockinData {
+  StockinData(this.date, this.qty, this.name, this.mainCategory, this.category);
+
+  final DateTime date;
+  final double qty;
+  final String name;
+  final String mainCategory;
+  final String category;
 }

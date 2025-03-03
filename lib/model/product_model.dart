@@ -11,36 +11,37 @@ class Product {
   final String barCode;
   final String stockInOut;
   final String price;
+  final String date;
 
-  Product({
-    required this.id,
-    required this.name,
-    required this.serialNo,
-    required this.modelNo,
-    required this.category,
-    required this.type,
-    required this.itemRemarks,
-    required this.quantity,
-    required this.vendorName,
-    required this.barCode,
-    required this.stockInOut,
-    required this.price,
-  });
+  Product(
+      {required this.id,
+      required this.name,
+      required this.serialNo,
+      required this.modelNo,
+      required this.category,
+      required this.type,
+      required this.itemRemarks,
+      required this.quantity,
+      required this.vendorName,
+      required this.barCode,
+      required this.stockInOut,
+      required this.price,
+      required this.date});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      name: json['name'],
-      serialNo: json['serial_no'],
-      modelNo: json['model_no'],
-      category: json['category'],
-      type: json['type'],
-      itemRemarks: json['item_remarks'],
-      quantity: json['qty'].toString(),
-      vendorName: json['vendor_name'],
-      barCode: json['barcode'],
-      stockInOut: json['Stock_in_out'],
-      price: json['price'],
-    );
+        id: json['id'],
+        name: json['name'],
+        serialNo: json['serial_no'],
+        modelNo: json['model_no'],
+        category: json['category'],
+        type: json['type'],
+        itemRemarks: json['item_remarks'],
+        quantity: json['qty'].toString(),
+        vendorName: json['vendor_name'],
+        barCode: json['barcode'],
+        stockInOut: json['Stock_in_out'],
+        price: json['price'],
+        date: json['date']);
   }
 }

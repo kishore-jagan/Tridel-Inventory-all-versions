@@ -15,6 +15,18 @@ import 'package:pdf/widgets.dart' as pw;
 
 class DispatchController extends GetxController {
   final TextEditingController customerNameController = TextEditingController();
+  final TextEditingController invoiceController = TextEditingController();
+  final TextEditingController pnoController = TextEditingController();
+  // final TextEditingController mosController = TextEditingController();
+  final TextEditingController senderNameController = TextEditingController();
+  final TextEditingController dispatchRemarksController =
+      TextEditingController();
+
+  var searchQuery = ''.obs;
+
+  String selectedMos = "ByRoad";
+  List<String> mosList = ["ByRoad", "ByAir", "ByTrain", "ByShip"];
+
   var selectedProducts = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
 
@@ -25,7 +37,7 @@ class DispatchController extends GetxController {
   final RxList<Map<String, dynamic>> filteredDispatchedProducts =
       <Map<String, dynamic>>[].obs;
 
-  Future<void> dispatchProducts() async {
+  Future<String> dispatchProducts() async {
     try {
       isLoading.value = true;
 
@@ -38,6 +50,11 @@ class DispatchController extends GetxController {
         },
         body: jsonEncode({
           'customerName': customerNameController.text,
+          'invoiceNo': invoiceController.text,
+          'projectNo': pnoController.text,
+          'mos': selectedMos,
+          'senderName': senderNameController.text,
+          'dispatchRemarks': dispatchRemarksController.text,
           'date': currentDate,
           'products': selectedProducts.map((product) {
             int quantity = int.tryParse(product['qty'].toString()) ?? 0;
@@ -56,8 +73,8 @@ class DispatchController extends GetxController {
         }),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      // print('Response status: ${response.statusCode}');
+      // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
@@ -67,14 +84,16 @@ class DispatchController extends GetxController {
           // Get.snackbar('Success', result['message'],
           //     snackPosition: SnackPosition.BOTTOM);
           await addCustomer();
-          selectedProducts.clear();
-          customerNameController.clear();
+          // selectedProducts.clear();
+          // customerNameController.clear();
+          return "ok";
         } else {
           final String error = result['message'];
           Toaster().showsToast(error, Colors.red, Colors.white);
           // Get.snackbar('Error', result['message'],
           //     snackPosition: SnackPosition.BOTTOM);
-          isLoading.value = false;
+
+          return "bad";
         }
       } else {
         Toaster().showsToast(
@@ -82,13 +101,15 @@ class DispatchController extends GetxController {
         print("Failed to save data. Status code: ${response.statusCode}");
         // Get.snackbar('Error', 'Failed to dispatch products',
         //     snackPosition: SnackPosition.BOTTOM);
-        isLoading.value = false;
+
+        return "bad";
       }
     } catch (e) {
       print('Error: $e');
     } finally {
       isLoading.value = false;
     }
+    return "bad";
   }
 
   Future<void> addCustomer() async {
@@ -106,13 +127,39 @@ class DispatchController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print("Vendor added: $data");
+        print("customer added: $data");
         isLoading.value = false;
       } else {
-        print("Failed to add vendor. Status code: ${response.statusCode}");
+        print("Failed to add customer. Status code: ${response.statusCode}");
       }
     } catch (e) {
-      print('Error adding vendor: $e');
+      print('Error adding customer: $e');
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> addSender() async {
+    try {
+      isLoading.value = true;
+      var response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.addReceiver}'),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          "receiverName": senderNameController.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("sender added: $data");
+        isLoading.value = false;
+      } else {
+        print("Failed to add sender. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error adding sender: $e');
       isLoading.value = false;
     }
   }
@@ -123,8 +170,8 @@ class DispatchController extends GetxController {
       final response = await http
           .get(Uri.parse('${ApiConfig.baseUrl}${ApiConfig.fetchDispatch}'));
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      // print('Response status: ${response.statusCode}');
+      // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);

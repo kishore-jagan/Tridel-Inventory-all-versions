@@ -23,7 +23,6 @@ class InventoryController extends GetxController {
   final TextEditingController vendorNameController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final TextEditingController placeController = TextEditingController();
-  // final TextEditingController mosController = TextEditingController();
   final TextEditingController receiversController = TextEditingController();
   final TextEditingController vendorRemarksController = TextEditingController();
 
@@ -32,22 +31,59 @@ class InventoryController extends GetxController {
     "GeoScience",
     "GeoInformatics",
     "GeoEngineering",
-    "Office"
+    "ESS"
   ];
 
   RxString selectedCategory = "Electrical".obs;
-  List<String> categoriesList = ["Electrical", "Mechanical", "IT", "Office"];
+  List<String> categoriesList = [
+    "Electrical",
+    "Mechanical",
+    "IT",
+    "Accounts",
+    "Admin",
+    "General"
+  ];
 
   RxString selectedType = "Rental".obs;
-  List<String> typeList = ["Rental", "Assets", "Stock"];
+  List<String> typeList = [
+    "Rental",
+    "Assets",
+    "Stock",
+    "Consumables",
+    "Repair/Services"
+  ];
 
   RxString selectedLocation = "Inhouse".obs;
   List<String> locationList = ["Inhouse", "Warehouse", "Onfield"];
 
-  RxString selectedMos = "ByRoad".obs;
+  RxString selectedReturnable = "NonReturnable".obs;
+  List<String> returnableList = ["NonReturnable", "Returnable"];
+
+  String selectedMos = "ByRoad";
   List<String> mosList = ["ByRoad", "ByAir", "ByTrain", "ByShip"];
 
   RxBool isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Listen for changes in selectedMainCategory
+    selectedMainCategory.listen((newCategory) {
+      updateCategoriesList(newCategory);
+    });
+  }
+
+  void updateCategoriesList(String mainCategory) {
+    if (mainCategory == "ESS") {
+      categoriesList = ["Accounts", "Admin", "General"];
+      selectedCategory.value = categoriesList.first;
+    } else {
+      categoriesList = ["Electrical", "Mechanical", "IT", "General"];
+      selectedCategory.value = categoriesList.first;
+    }
+    // Trigger UI update by setting the value again
+    selectedCategory.refresh();
+  }
 
   @override
   void onClose() {
@@ -70,7 +106,7 @@ class InventoryController extends GetxController {
     super.onClose();
   }
 
-  Future<void> saveData() async {
+  Future<String> saveData() async {
     try {
       double qty = double.parse(qtyController.text);
       double price = double.parse(priceController.text);
@@ -94,6 +130,7 @@ class InventoryController extends GetxController {
           "category": selectedCategory.value,
           "type": selectedType.value,
           "location": selectedLocation.value,
+          "returnable": selectedReturnable.value,
           "item_remarks": itemRemarksController.text,
           "project_name": pNameController.text,
           "project_no": pNoController.text,
@@ -102,7 +139,7 @@ class InventoryController extends GetxController {
           "vendor_name": vendorNameController.text,
           "date": dateController.text,
           "place": placeController.text,
-          "mos": selectedMos.value,
+          "mos": selectedMos,
           "receiver_name": receiversController.text,
           "vendor_remarks": vendorRemarksController.text,
           "Stock_in_out": 'Stock In',
@@ -113,13 +150,16 @@ class InventoryController extends GetxController {
         print('response body : ${response.body}');
         Map<String, dynamic> data = json.decode(response.body);
         // print("Response: $data");
-
+        print(data['status']);
         if (data['status'] == 'success') {
           final String remark = data['remark'];
           Toaster().showsToast(remark, Colors.green, Colors.white);
 
           await addVendor();
-          // clearFields();
+          await addReceiver();
+          clearFields();
+          print("ok");
+          return "ok";
         } else {
           final String message = data['remark'];
           Toaster().showsToast(message, Colors.red, Colors.white);
@@ -130,12 +170,15 @@ class InventoryController extends GetxController {
         print("Failed to save data. Status code: ${response.statusCode}");
         print('Response body: ${response.body}');
         isLoading.value = false;
+        return "bad";
       }
     } catch (e) {
       print('Error: $e');
+      return "bad";
     } finally {
       isLoading.value = false;
     }
+    return "bad";
   }
 
   void clearFields() {
@@ -178,6 +221,32 @@ class InventoryController extends GetxController {
       }
     } catch (e) {
       print('Error adding vendor: $e');
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> addReceiver() async {
+    try {
+      isLoading.value = true;
+      var response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.addReceiver}'),
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        body: {
+          "receiverName": receiversController.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("receiver added: $data");
+        isLoading.value = false;
+      } else {
+        print("Failed to add receiver. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Error adding receiver: $e');
       isLoading.value = false;
     }
   }

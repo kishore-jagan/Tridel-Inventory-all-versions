@@ -109,7 +109,7 @@ class _DateFilterDialogState extends State<DateFilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select Date Filter'),
+      title: const Text('Select Date Filter'),
       content: Column(children: [
         DropdownButtonFormField<String>(
           value: _selectedDateRange,

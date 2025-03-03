@@ -53,8 +53,27 @@ class _ProductsTableState extends State<ProductsTable> {
         Row(
           children: [
             _buildFilterDropdown(
+              'Main Category',
+              ["GeoScience", "GeoInformatics", "GeoEngineering", "ESS"],
+              _productsController.selectedMainCategory,
+              (value) {
+                setState(() {
+                  _productsController.selectedMainCategory = value!;
+                  _productsController.filterData();
+                });
+              },
+            ),
+            const SizedBox(width: 10),
+            _buildFilterDropdown(
               'Category List',
-              ['Electrical', 'Mechanical', 'IT', 'Office'],
+              [
+                "Electrical",
+                "Mechanical",
+                "IT",
+                "Accounts",
+                "Admin",
+                "General"
+              ],
               _productsController.selectedCategory,
               (value) {
                 setState(() {
@@ -66,7 +85,7 @@ class _ProductsTableState extends State<ProductsTable> {
             const SizedBox(width: 10),
             _buildFilterDropdown(
               'Type product',
-              ['Rental', 'Assets', 'Stock'],
+              ["Rental", "Assets", "Stock", "Consumables", "Repair/Services"],
               _productsController.selectedType,
               (value) {
                 setState(() {
@@ -93,8 +112,8 @@ class _ProductsTableState extends State<ProductsTable> {
         CustomButton(
           height: 45,
           onTap: () async {
-            final DateTimeRange? pickedDateRange =
-                await showDialog<DateTimeRange>(
+            // final DateTimeRange? pickedDateRange =
+            await showDialog<DateTimeRange>(
               context: context,
               builder: (BuildContext context) {
                 return CustomDateRangePickerDialog(
@@ -121,7 +140,7 @@ class _ProductsTableState extends State<ProductsTable> {
   Widget _buildFilterDropdown(String label, List<String> items, String value,
       void Function(String?) onChanged) {
     return Container(
-      width: 140,
+      width: 155,
       height: 40,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -170,7 +189,7 @@ class _ProductsTableState extends State<ProductsTable> {
               children: [
                 SizedBox(
                   height: 50,
-                  width: 440,
+                  width: 645,
                   child: CustomSearchField(
                     onChanged: (value) {
                       setState(() {
@@ -206,32 +225,35 @@ class _ProductsTableState extends State<ProductsTable> {
               DataColumn(label: Text("ID", style: TextStyle(fontSize: 20))),
               DataColumn(label: Text('Name', style: TextStyle(fontSize: 20))),
               DataColumn(
+                  label: Text('Project No', style: TextStyle(fontSize: 20))),
+              DataColumn(
                   label: Text('Model No', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Serial No', style: TextStyle(fontSize: 20))),
               DataColumn(
-                  label: Text('Vendor Name', style: TextStyle(fontSize: 20))),
+                  label: Text('Supplier', style: TextStyle(fontSize: 20))),
+              DataColumn(
+                  label: Text('Main Category', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Category', style: TextStyle(fontSize: 20))),
               DataColumn(label: Text('Date', style: TextStyle(fontSize: 20))),
+              DataColumn(label: Text('Qty', style: TextStyle(fontSize: 20))),
+              DataColumn(label: Text('Amt', style: TextStyle(fontSize: 20))),
               DataColumn(
-                  label: Text('Quantity', style: TextStyle(fontSize: 20))),
-              DataColumn(label: Text('Amount', style: TextStyle(fontSize: 20))),
-              DataColumn(
-                  label: Text('Total Amount', style: TextStyle(fontSize: 20))),
+                  label: Text('Total Amt', style: TextStyle(fontSize: 20))),
               DataColumn(
                   label: Text('Actions', style: TextStyle(fontSize: 20))),
             ],
             source: MyData(controller: _productsController, context: context),
             columnSpacing: ResponsiveWidget.isLargeScreen(context)
-                ? MediaQuery.of(context).size.width / 50
+                ? MediaQuery.of(context).size.width / 110
                 : ResponsiveWidget.isCustomScreen(context)
-                    ? MediaQuery.of(context).size.width / 60
+                    ? MediaQuery.of(context).size.width / 120
                     : ResponsiveWidget.isMediumScreen(context)
                         ? MediaQuery.of(context).size.width / 120
                         : MediaQuery.of(context).size.width / 120,
             horizontalMargin: ResponsiveWidget.isLargeScreen(context) ? 30 : 10,
-            rowsPerPage: 14,
+            rowsPerPage: 15,
             showCheckboxColumn: false,
             headingRowColor: MaterialStateColor.resolveWith(
                 (states) => Colors.blue.shade200),

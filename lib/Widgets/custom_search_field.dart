@@ -5,13 +5,15 @@ class CustomSearchField extends StatelessWidget {
   final void Function(String)? onChanged;
   final String? hintText;
   final IconData prefixIcon;
+  final BorderRadius radius;
 
-  CustomSearchField({
-    this.controller,
-    this.onChanged,
-    this.hintText = 'Search here... eg.. Product name, model no, etc...',
-    this.prefixIcon = Icons.search,
-  });
+  const CustomSearchField(
+      {super.key,
+      this.controller,
+      this.onChanged,
+      this.hintText = 'Search here... eg.. Product name, model no, etc...',
+      this.prefixIcon = Icons.search,
+      this.radius = const BorderRadius.all(Radius.circular(20))});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +31,9 @@ class CustomSearchField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
         ),
         enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: radius,
             // borderSide: BorderSide.none
-            borderSide: BorderSide(color: Colors.grey)),
+            borderSide: const BorderSide(color: Colors.grey)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20.0),
           borderSide: const BorderSide(color: Colors.lightBlue),

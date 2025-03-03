@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:inventory/Constants/constants.dart';
 import 'package:inventory/Constants/style.dart';
 import 'package:inventory/Routing/routes.dart';
 
@@ -35,6 +36,12 @@ class MenuController extends GetxController {
         return customIcon(Icons.local_shipping, itemName);
       case authenticationPageDisplayName:
         return customIcon(Icons.exit_to_app, itemName);
+      case returnableDisplayName:
+        return customIcon(Icons.restart_alt, itemName);
+      case pendingWorkDisplayName:
+        return customIcon(Icons.pending_actions, itemName);
+      case trashDisplayName:
+        return customIcon(Icons.restore_from_trash, itemName);
       default:
         return customIcon(Icons.exit_to_app, itemName);
     }
@@ -45,12 +52,12 @@ class MenuController extends GetxController {
       return Icon(
         icon,
         size: 22,
-        color: dark,
+        color: light,
       );
     }
     return Icon(
       icon,
-      color: isHovering(itemName) ? dark : lightGray,
+      color: isHovering(itemName) ? light : textColor,
     );
   }
 }

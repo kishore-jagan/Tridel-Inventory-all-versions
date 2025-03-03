@@ -16,7 +16,11 @@ class EmployeeAddController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  List<String> roleList = ['Admin', 'User'];
+  List<String> roleList = [
+    'Admin',
+    'Manager',
+    'User',
+  ];
   RxString selectedRole = "Admin".obs;
 
   var isLoading = false.obs;

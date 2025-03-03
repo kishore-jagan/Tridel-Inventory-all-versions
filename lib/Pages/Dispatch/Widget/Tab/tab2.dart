@@ -154,12 +154,63 @@ class _Tab2State extends State<Tab2> {
                                           weight: FontWeight.bold,
                                           size: 18,
                                         ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text:
+                                              'Invoice No: ${product['invoice_no']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text:
+                                              'Project No: ${product['project_no']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text: 'MOS: ${product['mos']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text:
+                                              'Sender: ${product['sender_name']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text:
+                                              'Remarks: ${product['dispatch_remarks']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        CustomText(
+                                          text:
+                                              'Date:     ${product['created_at']}',
+                                          weight: FontWeight.bold,
+                                          size: 18,
+                                        ),
                                       ],
                                     ),
-                                    CustomText(
-                                      text: 'Date: ${product['created_at']}',
-                                      weight: FontWeight.bold,
-                                      size: 18,
+                                    const Row(
+                                      children: [],
                                     ),
                                   ],
                                 ),

@@ -21,6 +21,15 @@ const authenticationPageRoute = '/auth';
 const dispatchPageDisplayName = 'Dispatch';
 const dispatchPageRoute = '/dispatch';
 
+const pendingWorkDisplayName = "Pending Task";
+const pendingtaskRoute = '/pending';
+
+const trashDisplayName = "Trash";
+const trashRoute = '/trash';
+
+const returnableDisplayName = "Returnable";
+const returnableRoute = '/returnable';
+
 class MenuItem {
   final String name;
   final String route;
@@ -35,5 +44,6 @@ List<MenuItem> sideMenuItems = [
   MenuItem(name: userPageDisplayName, route: userPageRoute),
   MenuItem(name: barcodePageDisplayName, route: barcodePageroute),
   MenuItem(name: dispatchPageDisplayName, route: dispatchPageRoute),
+  MenuItem(name: returnableDisplayName, route: returnableRoute),
   MenuItem(name: authenticationPageDisplayName, route: authenticationPageRoute),
 ];

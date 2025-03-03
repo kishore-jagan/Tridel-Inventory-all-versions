@@ -26,6 +26,8 @@ class EditProductPopup extends StatelessWidget {
         TextEditingController(text: product['model_no']);
     final TextEditingController quantityController =
         TextEditingController(text: product['qty'].toString());
+    final TextEditingController mainCategoryController =
+        TextEditingController(text: product['main_category']);
     final TextEditingController categoryController =
         TextEditingController(text: product['category']);
     final TextEditingController priceController =
@@ -66,7 +68,8 @@ class EditProductPopup extends StatelessWidget {
             style: TextStyle(fontSize: 18),
           ),
           onPressed: () async {
-            int newQty = int.tryParse(quantityController.text) ?? 0;
+            int newQty =
+                int.tryParse(quantityController.text) ?? product['qty'];
             product['qty'] = newQty;
             final updatedProduct = {
               'name': nameController.text,
@@ -74,10 +77,12 @@ class EditProductPopup extends StatelessWidget {
               'model_no': modelNoController.text,
               'qty': quantityController.text,
               'Stock_in_out': selectedStock,
+              'main_category': mainCategoryController.text,
               'category': categoryController.text,
               'price': priceController.text,
+              'force_stockout_insert': 'true',
             };
-            // print('updatedProduct : $updatedProduct');
+            print('updatedProduct : $updatedProduct');
 
             await _updateProduct(updatedProduct);
 

@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 
 class CustomDateRangePickerDialog extends StatefulWidget {
@@ -5,10 +7,10 @@ class CustomDateRangePickerDialog extends StatefulWidget {
   final Function(DateTimeRange) onDateRangeSelected;
 
   const CustomDateRangePickerDialog({
-    Key? key,
+    super.key,
     this.initialDateRange,
     required this.onDateRangeSelected,
-  }) : super(key: key);
+  });
 
   @override
   _CustomDateRangePickerDialogState createState() =>
